@@ -1,0 +1,566 @@
+const SET_LATLNG = "SET_LATLNG"; //经纬度
+const SET_LAYER_FLAG = "SET_LAYER_FLAG"; // 设置数据请求flag
+const SET_BASE_LAYER_INDEX = "SET_BASE_LAYER_INDEX" //图层索引
+const SET_WIND_DATA = "SET_WIND_DATA" //风场数据
+const SET_AIR_PRESSURE_DATA = "SET_AIR_PRESSURE_DATA"; // 设置气压数据
+const SET_DSWRF = "SET_DSWRF"; //测试数据
+const SET_AQI = "SET_AQI"
+const SET_CO = "SET_CO"
+const SET_HUMIDITY = "SET_HUMIDITY"
+const SET_PM25 = "SET_PM25"
+const SET_TEMP = "SET_TEMP"
+const SET_TP = "SET_TP"
+const SET_TAVG = "SET_TAVG"
+const SET_SHOW3D = "SET_SHOW3D"
+
+const SET_SEA_TEMPERATURE_DATA = "SET_SEA_TEMPERATURE_DATA"; // 设置海温数据
+const SET_WAVE_DATA = "SET_WAVE_DATA"; // 设置海浪数据
+const SET_CURRENT_DATA = "SET_CURRENT_DATA"; // 设置洋流数据
+const SET_CURRENT_SHOW_DATA = "SET_CURRENT_SHOW_DATA" //设置当前显示数据
+// import http from "@/http/index";
+// import { getEarthWindInfo } from "../../http/mapLayer";
+import { latlngChangeToDMS } from "../../utils/util";
+//导入图标
+import windIcon from "@/assets/myMap/风场.png";
+import waveIcon from "@/assets/myMap/海浪.png";
+import seaTemperatureIcon from "@/assets/myMap/海温.png"
+import oceanCurrentIcon from "@/assets/myMap/洋流.png"
+import airPressureIcon from "@/assets/myMap/气压.png"
+import fushe from "@/assets/myMap/辐射.png"
+import kongqizhiliang from "@/assets/myMap/空气质量.png" 
+import co1 from "@/assets/myMap/一氧化碳.png"
+import xiangduishidu from "@/assets/myMap/相对湿度.png"
+import pm25Icon from "@/assets/myMap/pm2.5.png" 
+import wendu from "@/assets/myMap/温度.png"
+import jiangshuiliang from "@/assets/myMap/降水量.png"
+
+// import temperatureIcon from "@/assets/myMap/气温.png"
+import demo from "../../mock/data"
+// import LW from "../../mock/data/libwind.min"
+export default {
+  namespaced: true,
+  state: {
+    map: {
+      titleLayers: [
+        {
+          url: "https://www.google.cn/maps/vt?lyrs=s@804&gl=cn&x={x}&y={y}&z={z}",
+        }, // 谷歌卫星
+        {
+          url: "http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetPurplishBlue/MapServer/tile/{z}/{y}/{x}",
+        }, // 智图深蓝色
+        {
+          url: "http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetWarm/MapServer/tile/{z}/{y}/{x}",
+        }, // 智图暖色
+        {
+          url: "http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetGray/MapServer/tile/{z}/{y}/{x}",
+        }, // 智图灰色
+        {
+          url: "http://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}",
+        }, // 高德矢量
+      ],
+      baseLayer: [
+        {
+          layerType: "setWindData",
+          layerIcon: windIcon,
+          layerName: "风场",
+          active: false,
+        },
+        // {layerType:'setAirTemperatureData',layerIcon:temperatureIcon,layerName:'气温',active:false},
+        {
+          layerType: "setWaveData",
+          layerIcon: waveIcon,
+          layerName: "海浪",
+          active: false,
+        },
+        {layerType:'setSeaTemperatureData',layerIcon: seaTemperatureIcon,layerName:'海温',active:false},
+        {layerType:'setCurrentData',layerIcon: oceanCurrentIcon,layerName:'洋流',active:false},
+        {layerType:'setAirPressureData',layerIcon: airPressureIcon,layerName:'气压',active:false},
+        {layerType:'setDswrf',layerIcon:fushe,layerName:'辐射量',active:false},
+        {layerType:'setAqi',layerIcon:kongqizhiliang,layerName:'水蒸气压',active:false},
+        {layerType:'setCo',layerIcon:co1,layerName:'一氧化碳',active:false},
+        {layerType:'setHumidity',layerIcon:xiangduishidu,layerName:'相对湿度',active:false},
+        {layerType:'setPm25',layerIcon:pm25Icon,layerName:'PM2.5',active:false},
+        {layerType:'setTavg',layerIcon:wendu,layerName:'温度',active:false},
+        {layerType:'setTp',layerIcon:jiangshuiliang,layerName:'降水量',active:false}
+        // {layerType:'setSaltData',layerIcon: salinityIcon,layerName:'盐度',active:false},
+      ],
+      currentLat: 0.0,
+      currentLng: 0.0,
+      //数据图层
+      baseLayerIndex: null,
+      //   图层数据开关
+      layerFlag: true,
+      windFlag:false, // 风场开关
+      windData:[],
+      windHotData:[],
+      waveFlag:false, // 海浪开关
+      currentFlag:false, // 洋流开关
+      seaTemperatureFlag:false, // 海温开关
+      dswrfFlag:false,
+      aqiFlag:false,
+      coFlag:false,
+      humidityFlag:false,
+      pm25Flag:false,
+      tempFlag:false,
+      tavgFlag:false,
+      tpFlag:false,
+      waveData:null,
+      waveHotData:null,
+      currentData:null,
+      currentHotData:null,
+      airPressureData:null,
+      seaTemperatureData:null,
+      airTemperatureData:null,
+      dswrfData:null,
+      aqiData:null,
+      coData:null,
+      humidityData:null,
+      pm25Data:null,
+      tempData:null,
+      tpData:null,
+      tavgData:null,
+      show3D:false,
+      currentShowData:{
+        data:'--',
+        lat:'',
+        lng:'',
+        title:''
+      },
+    },
+    style:{
+      vectorAnimateSwitch:true, // 全局 图层 矢量动画 开关
+
+    }
+  },
+  mutations: {
+    
+    [SET_LATLNG](state, payload) {
+      state.map.currentLat = latlngChangeToDMS(payload.lat);
+      state.map.currentLng = latlngChangeToDMS(payload.lng);
+    },
+    [SET_LAYER_FLAG](state, payload) {
+      state.map.layerFlag = payload;
+    },
+    [SET_BASE_LAYER_INDEX](state,payload){
+        if(state.map.baseLayerIndex == payload.index && payload.flag){
+            state.map.baseLayerIndex = null
+        }else {
+            state.map.baseLayerIndex = payload.index
+        }
+        state.map.baseLayer[payload.index].active = !payload.flag
+    },
+    [SET_WIND_DATA](state,payload){
+        //控制 风场开关打开
+        state.map.windFlag = !payload.flag
+        //接受数据
+        // console.log('setwinddata')
+        // console.log(payload)
+        state.map.windData = payload.data
+        state.map.windHotData = payload.hotData
+    },
+    [SET_SEA_TEMPERATURE_DATA](state,payload){
+        // console.log(payload)
+      state.map.seaTemperatureFlag = !payload.flag;
+      state.map.seaTemperatureData= payload.data;
+    },
+    [SET_WAVE_DATA](state,payload){
+      state.map.waveFlag = !payload.flag;
+      state.map.waveData = payload.data;
+      state.map.waveHotData = payload.hotData;
+      
+    },
+    [SET_CURRENT_DATA](state,payload){
+      state.map.currentFlag = !payload.flag;
+      state.map.currentData = payload.data;
+      state.map.currentHotData = payload.hotData;
+    },
+     [SET_AIR_PRESSURE_DATA](state,payload){
+      state.map.airPressureFlag = !payload.flag;
+      state.map.airPressureData = payload.data;
+    },
+    [SET_DSWRF](state,payload){
+        state.map.dswrfFlag= !payload.flag;
+        state.map.dswrfData = payload.data;
+        
+    },
+    [SET_AQI](state,payload){
+        state.map.aqiFlag= !payload.flag;
+        state.map.aqiData = payload.data;
+        
+    },
+    [SET_CO](state,payload){
+        state.map.coFlag= !payload.flag;
+        state.map.coData = payload.data;
+        
+    },
+    [SET_HUMIDITY](state,payload){
+        state.map.humidityFlag= !payload.flag;
+        state.map.humidityData = payload.data;
+        
+    },
+    [SET_PM25](state,payload){
+        state.map.pm25Flag= !payload.flag;
+        state.map.pm25Data = payload.data;
+        
+    },
+    [SET_TAVG](state,payload){
+        state.map.tavgFlag= !payload.flag;
+        state.map.tavgData = payload.data;
+        
+    },
+    // [SET_TEMP](state,payload){
+    //     state.map.tempFlag= !payload.flag;
+    //     state.map.tempData = payload.data;
+        
+    // },
+    [SET_TP](state,payload){
+        state.map.tpFlag= !payload.flag;
+        state.map.tpData = payload.data;
+        
+    },
+    [SET_CURRENT_SHOW_DATA](state,payload){
+        // console.log(payload)
+        state.map.currentShowData.data = payload.showValue
+        state.map.currentShowData.lat = payload.lat.toFixed(2)
+        state.map.currentShowData.lng = payload.lng.toFixed(2)
+        state.map.currentShowData.title = payload.titleName == ''?'数据': payload.titleName
+    },
+    [SET_SHOW3D](state,payload){
+        let eventFlag = payload.eventFlag
+        // console.log(payload)
+        if(eventFlag == "二维"){
+            state.map.show3D = false
+        }
+        if(eventFlag == '三维'){
+
+            state.map.show3D =true
+        }
+        // console.log(state.map.show3D)
+    }
+  },
+  actions: {
+    setWindData(context, payload) {
+    
+      if (!payload.flag) {
+        //调整图层开关
+        context.commit('SET_LAYER_FLAG',false)
+        //
+        context.commit('SET_BASE_LAYER_INDEX',payload)
+        let dat = JSON.parse(demo.windData.data)
+        payload.data = dat.dataJson
+        context.commit('SET_WIND_DATA',payload)
+        context.commit('SET_LAYER_FLAG',true)
+
+      }
+      else{
+        payload.data = null
+        payload.hotData = null
+        context.commit('SET_WIND_DATA',payload)
+        context.commit('SET_LAYER_FLAG',true)
+        context.commit('SET_BASE_LAYER_INDEX',payload)
+      }
+      // console.log(payload)
+
+    },
+    setSeaTemperatureData(context,payload){
+      if (!payload.flag){
+        context.commit('SET_LAYER_FLAG',false)
+        const dat = JSON.parse(demo.temperatureData.data)
+        payload.data = dat.dataJson;
+          context.commit('SET_BASE_LAYER_INDEX',payload)
+          context.commit('SET_SEA_TEMPERATURE_DATA',payload)
+          context.commit('SET_LAYER_FLAG',true)
+
+      }else{
+        payload.data = []
+        context.commit('SET_SEA_TEMPERATURE_DATA',payload)
+        context.commit('SET_LAYER_FLAG',true)
+        context.commit('SET_BASE_LAYER_INDEX',payload)
+
+      }
+    } ,
+    setWaveData(context,payload){
+        // console.log(payload)
+      if (!payload.flag){
+        context.commit('SET_LAYER_FLAG',false)
+        const dat = JSON.parse(demo.seaWaveData.data)
+          payload.data = dat.dataJson;
+        context.commit('SET_LAYER_FLAG', true)
+        context.commit('SET_BASE_LAYER_INDEX',payload)
+        context.commit('SET_WAVE_DATA', payload)
+      }else{
+        payload.data = []
+        payload.hotData = []
+        context.commit('SET_LAYER_FLAG',true)
+        context.commit('SET_WAVE_DATA',payload)
+        context.commit('SET_BASE_LAYER_INDEX',payload)
+      }
+    },
+    setCurrentData(context,payload){
+      if (!payload.flag){
+        context.commit('SET_LAYER_FLAG',false)
+        const dat = JSON.parse(demo.seaCurrentData.data)
+        payload.data = dat.dataJson;
+          context.commit('SET_BASE_LAYER_INDEX',payload)
+          context.commit('SET_CURRENT_DATA', payload)
+          context.commit('SET_LAYER_FLAG', true)
+
+      }else{
+        payload.data = []
+        payload.hotData = []
+        context.commit('SET_CURRENT_DATA',payload)
+        context.commit('SET_LAYER_FLAG',true)
+        context.commit('SET_BASE_LAYER_INDEX',payload)
+      }
+    },
+    setAirPressureData(context,payload){
+      if (!payload.flag){
+        context.commit('SET_LAYER_FLAG',false)
+        const dat = JSON.parse(demo.pressureData.data)
+        console.log(dat)
+        payload.data = dat.dataJson;
+          context.commit('SET_BASE_LAYER_INDEX',payload)
+
+          context.commit('SET_AIR_PRESSURE_DATA',payload)
+          context.commit('SET_LAYER_FLAG',true)
+      }else{
+        payload.data = []
+        context.commit('SET_AIR_PRESSURE_DATA',payload)
+        context.commit('SET_LAYER_FLAG',true)
+        context.commit('SET_BASE_LAYER_INDEX',payload)
+
+      }
+    },
+    setShowData(context,payload){
+        // console.log(context,payload)
+        let res = {}
+        let {lat,lng} = payload
+        res.lat = lat
+        res.lng = lng
+        let layerType = payload.layerType
+        // res.layerType = payload.layerType
+        let layerDataName = ''
+        let titleName = ''
+        switch(layerType){
+            case 'setWindData':
+                layerDataName = 'windData'
+                titleName = '风力值'
+                break;
+            case 'setWaveData':
+                layerDataName = 'seaWaveData'
+                titleName = '海浪值'
+
+                break;
+            case 'setSeaTemperatureData':
+                layerDataName = 'temperatureData'
+                titleName = '海温值'
+
+                break;
+            case 'setCurrentData':
+                layerDataName = 'seaCurrentData'
+                titleName = '洋流值'
+                break;
+            case 'setAirPressureData':
+                layerDataName = 'pressureData'
+                titleName = '气压值'
+                break;
+            case 'SET':
+                layerDataName = 'text'
+                titleName = '测试'
+                break;
+            case 'setHumidity':
+                layerDataName = 'humidity'
+                titleName = '相对湿度'
+                break;
+        }
+        if(layerDataName!=''){
+            let file = demo[layerDataName].data
+            // console.log(file)
+            const dat = JSON.parse(file)
+            // console.log(dat)
+            let {header,data } = dat.dataJson[0]
+            let {la1,lo1,dx,dy} = header
+            //计算坐标所在栅格
+            console.log(lat,lng)
+            let row = Math.floor(Math.abs(lat - la1)/dx)
+            let col = Math.floor(Math.abs(lo1-lng)/dy)
+            console.log(row,col)
+            let index = row*dx+col
+
+            // console.log(data)
+            let showValue = data[index]
+            console.log(showValue)
+            res.showValue =  showValue.toFixed(2)
+            res.titleName = titleName
+            // console.log(parseInt(showValue))
+            context.commit('SET_CURRENT_SHOW_DATA',res)
+        }
+    },
+    setDswrf(context,payload){
+        if (!payload.flag){
+            context.commit('SET_LAYER_FLAG',false)
+           
+            const dat = JSON.parse(demo.dswrf.data)
+            // console.log(dat)
+                payload.data = dat.dataJson;
+              context.commit('SET_BASE_LAYER_INDEX',payload)
+    
+              context.commit('SET_DSWRF',payload)
+              context.commit('SET_LAYER_FLAG',true)
+          }else{
+            payload.data = []
+            context.commit('SET_DSWRF',payload)
+            context.commit('SET_LAYER_FLAG',true)
+            context.commit('SET_BASE_LAYER_INDEX',payload)
+    
+          }
+        // console.log(payload)
+    },
+    setAqi(context,payload){
+        if (!payload.flag){
+            context.commit('SET_LAYER_FLAG',false)
+           
+            const dat = JSON.parse(demo.srad.data)
+            // console.log(dat)
+             payload.data = dat.dataJson;
+              context.commit('SET_BASE_LAYER_INDEX',payload)
+    
+              context.commit('SET_AQI',payload)
+              context.commit('SET_LAYER_FLAG',true)
+          }else{
+            payload.data = []
+            context.commit('SET_AQI',payload)
+            context.commit('SET_LAYER_FLAG',true)
+            context.commit('SET_BASE_LAYER_INDEX',payload)
+    
+          }
+        // console.log(payload)
+    },
+    setCo(context,payload){
+        
+        if (!payload.flag){
+            context.commit('SET_LAYER_FLAG',false)
+           
+            const dat = JSON.parse(demo.co.data)
+            // console.log(dat)
+                payload.data = dat.dataJson;
+              context.commit('SET_BASE_LAYER_INDEX',payload)
+    
+              context.commit('SET_CO',payload)
+              context.commit('SET_LAYER_FLAG',true)
+          }else{
+            payload.data = []
+            context.commit('SET_CO',payload)
+            context.commit('SET_LAYER_FLAG',true)
+            context.commit('SET_BASE_LAYER_INDEX',payload)
+    
+          }
+        // console.log(payload)
+    },
+    setHumidity(context,payload){
+        if (!payload.flag){
+            context.commit('SET_LAYER_FLAG',false)
+           
+            const dat = JSON.parse(demo.humidity.data)
+            // console.log(dat)
+                payload.data = dat.dataJson;
+              context.commit('SET_BASE_LAYER_INDEX',payload)
+    
+              context.commit('SET_HUMIDITY',payload)
+              context.commit('SET_LAYER_FLAG',true)
+          }else{
+            payload.data = []
+            context.commit('SET_HUMIDITY',payload)
+            context.commit('SET_LAYER_FLAG',true)
+            context.commit('SET_BASE_LAYER_INDEX',payload)
+    
+          }
+        // console.log(payload)
+    },
+    setPm25(context,payload){
+        if (!payload.flag){
+            context.commit('SET_LAYER_FLAG',false)
+           
+            const dat = JSON.parse(demo.pm25.data)
+            // console.log(dat)
+                payload.data = dat.dataJson;
+              context.commit('SET_BASE_LAYER_INDEX',payload)
+    
+              context.commit('SET_PM25',payload)
+              context.commit('SET_LAYER_FLAG',true)
+          }else{
+            payload.data = []
+            context.commit('SET_PM25',payload)
+            context.commit('SET_LAYER_FLAG',true)
+            context.commit('SET_BASE_LAYER_INDEX',payload)
+    
+          }
+        // console.log(payload)
+    },
+    setTavg(context,payload){
+        if (!payload.flag){
+            context.commit('SET_LAYER_FLAG',false)
+           
+            const dat = JSON.parse(demo.tavg.data)
+            // console.log(dat)
+                payload.data = dat.dataJson;
+              context.commit('SET_BASE_LAYER_INDEX',payload)
+    
+              context.commit('SET_TAVG',payload)
+              context.commit('SET_LAYER_FLAG',true)
+          }else{
+            payload.data = []
+            context.commit('SET_TAVG',payload)
+            context.commit('SET_LAYER_FLAG',true)
+            context.commit('SET_BASE_LAYER_INDEX',payload)
+    
+          }
+        // console.log(payload)
+    },
+    // setTemp(context,payload){
+    //     // console.log(payload)
+    //     if (!payload.flag){
+    //         context.commit('SET_LAYER_FLAG',false)
+           
+    //         const dat = JSON.parse(demo.temp.data)
+    //             payload.data = dat;
+    //           context.commit('SET_BASE_LAYER_INDEX',payload)
+    
+    //           context.commit('SET_TEMP',payload)
+    //           context.commit('SET_LAYER_FLAG',true)
+    //       }else{
+    //         payload.data = []
+    //         context.commit('SET_TEMP',payload)
+    //         context.commit('SET_LAYER_FLAG',true)
+    //         context.commit('SET_BASE_LAYER_INDEX',payload)
+    
+    //       }
+        
+    // },
+    setTp(context,payload){
+        if (!payload.flag){
+            context.commit('SET_LAYER_FLAG',false)
+           
+            const dat = JSON.parse(demo.tp.data)
+            // console.log(dat)
+                payload.data = dat.dataJson;
+              context.commit('SET_BASE_LAYER_INDEX',payload)
+    
+              context.commit('SET_TP',payload)
+              context.commit('SET_LAYER_FLAG',true)
+          }else{
+            payload.data = []
+            context.commit('SET_TP',payload)
+            context.commit('SET_LAYER_FLAG',true)
+            context.commit('SET_BASE_LAYER_INDEX',payload)
+    
+          }
+        // console.log(payload)
+    },
+    show3D(context,payload){
+        context.commit('SET_SHOW3D',payload)
+        
+    }
+  },
+  modules: {},
+};
