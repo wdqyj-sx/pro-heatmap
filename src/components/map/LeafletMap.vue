@@ -65,7 +65,8 @@ export default {
         flag: false
       },
       show3Dflag: false,
-      radio1: '二维'
+      radio1: '二维',
+      scene: null
 
     };
   },
@@ -315,22 +316,22 @@ export default {
 
       this.scalarLayer.onAdd(this.map);
       let camvas = this.scalarLayer._canvasLayer.options.pane.children[0]
-    //     console.log(camvas)
-    //     function drawCanvas(){
-    //         return camvas
-    //     }
-    //   this.cesiumviewer.entities.add({
-    //     rectangle: {
-    //       coordinates: Cesium.Rectangle.fromDegrees(-180, -90, 180, 90),
-    //       //coordinates: new Cesium.BoundingRectangle(0,0,100,100),
-    //       material: new Cesium.ImageMaterialProperty({
-    //         image: new Cesium.CallbackProperty(drawCanvas, false),
-    //         transparent: true,
-    //       }),
-    //       rotation: Cesium.Math.toRadians(13),
-    //     }
-    //   })
-        // console.log(this.map.layers)
+      //     console.log(camvas)
+      //     function drawCanvas(){
+      //         return camvas
+      //     }
+      //   this.cesiumviewer.entities.add({
+      //     rectangle: {
+      //       coordinates: Cesium.Rectangle.fromDegrees(-180, -90, 180, 90),
+      //       //coordinates: new Cesium.BoundingRectangle(0,0,100,100),
+      //       material: new Cesium.ImageMaterialProperty({
+      //         image: new Cesium.CallbackProperty(drawCanvas, false),
+      //         transparent: true,
+      //       }),
+      //       rotation: Cesium.Math.toRadians(13),
+      //     }
+      //   })
+      // console.log(this.map.layers)
       if (type == 'pressure' || type == "wind" || type == "wave") {
         //如果是压力、风场、海浪
         // 去除遮罩
@@ -385,39 +386,38 @@ export default {
       }
     },
     initCesium () {
-      let cesiumviewer = new Cesium.Viewer('cesium-map', {
-        animation: false, //是否显示动画控件
-        baseLayerPicker: false, //是否显示图层选择控件
-        geocoder: false, //是否显示地名查找控件
-        timeline: false, //是否显示时间线控件
-        sceneModePicker: true, //是否显示投影方式控件
-        navigationHelpButton: false, //是否显示帮助信息控件
-        infoBox: true, //是否显示点击要素之后显示的信息
-        homeButton: false,
-        sceneModePicker: false,
-        fullscreenButton: false,
-        //根据太阳位置开启照明
-
+      var viewer = new Cesium.Viewer('cesium-map', {
+        contextOptions: {
+          requestWebgl2: true
+        },
+        infobox: false,
+        skyAtmosphere: false
       })
 
-      cesiumviewer.scene.globe.enableLighting = true
-      this.cesiumviewer = cesiumviewer
-      window.cesiumviewer = this.cesiumviewer
-      //加载天地图
-      let TianDiLayer = new Cesium.WebMapTileServiceImageryProvider({
-        url: 'http://t0.tianditu.gov.cn/img_w/wmts?tk=ffd0e61d238085c62d54bf80db7b8a72',
-        // url:this.titleLayers[2].url,
-        layer: 'img',
-        style: 'default',
-        tileMatrixSetID: 'w',
-        format: 'tiles',
-        maximumLevel: 18,
+
+      this.cesiumView = viewer
+      var scene = viewer.scene;
+      this.scene = scene
+      scene.skyBox.show = true;
+      viewer.scene.skyBox.show = true;
+      viewer.scene.sun.show = true;
+      viewer.scene.bloomEffect.show = false; //启用泛光效果
+      viewer.scene.bloomEffect.threshold = 0.6;
+      viewer.scene.bloomEffect.bloomIntensity = 0.6;
+      var promise = scene.open("http://www.supermapol.com/realspace/services/3D-ShiJieGuoJiaBianJie/rest/realspace");
+      Cesium.when.all(promise, function (layer) {
+        var layer1 = scene.layers.find("Country_Label@World");
+        var layerEffect1 = layer1.effect;
+        layerEffect1.setValue('Color', new Cesium.Color(255 * 1.5 / 255, 255 * 1.5 / 255, 255 * 1.5 / 255, 1));
+        layerEffect1.setValue('Width', 1.3);
+
+        var layer3 = scene.layers.find("Ocean_Label@World");
+        var layerEffect3 = layer3.effect;
+        layerEffect3.setValue('Color', new Cesium.Color(255 * 1.5 / 255, 255 * 1.5 / 255, 255 * 1.5 / 255, 1));
+        layerEffect3.setValue('Width', 1.3);
       })
-      cesiumviewer.imageryLayers.addImageryProvider(TianDiLayer)
-      //设置初始位置
-      cesiumviewer.camera.setView({
-        destination: Cesium.Cartesian3.fromDegrees(116.20, 40.55, 10000000)
-      });
+
+
     },
     changeShow (e) {
 
@@ -496,40 +496,108 @@ export default {
       // this.heatmapLayer.configure(config).setData(heatData)
       this.heatmapLayer.setData(heatData)
     },
+    removeCesiumLayer () {
+      this.scene.primitives.removeAll()
+      this.cesiumView.imageryLayers.removeAll()
+    },
+    addCesiumLayer (type, data) {
+
+      //   this.removeCesiumLayer()
+      var colorTable = new Cesium.ColorTable();
+      colorTable.insert(2, new Cesium.Color(254 / 255, 224 / 255, 139 / 255, 0.95));
+      colorTable.insert(2, new Cesium.Color(171 / 255, 221 / 255, 164 / 255, 0.95));
+      colorTable.insert(2, new Cesium.Color(104 / 255, 196 / 255, 160 / 255, 0.95));
+      colorTable.insert(4, new Cesium.Color(44 / 255, 185 / 255, 156 / 255, 0.95));
+      colorTable.insert(4, new Cesium.Color(25 / 255, 169 / 255, 178 / 255, 0.95));
+      colorTable.insert(7, new Cesium.Color(50 / 255, 136 / 255, 189 / 255, 0.95));
+      colorTable.insert(10, new Cesium.Color(31 / 255, 110 / 255, 183 / 255, 0.95));
+      colorTable.insert(15, new Cesium.Color(5 / 255, 98 / 255, 184 / 255, 0.95));
+      var fieldLayer = new Cesium.FieldLayer3D(this.scene.context); //场数据图层
+      fieldLayer.particleVelocityFieldEffect.velocityScale = 0.4 * 100.0; //初始化效果
+      fieldLayer.particleVelocityFieldEffect.particleSize = 1.2;
+      fieldLayer.particleVelocityFieldEffect.paricleCountPerDegree = 1.0;
+      fieldLayer.particleVelocityFieldEffect.particleSize = 1.2
+      // fieldLayer.particleVelocityFieldEffect.particleLifeRange = 5
+      fieldLayer.particleVelocityFieldEffect.paricleCountPerDegree = 1
+      this.scene.primitives.add(fieldLayer); //添加场图层
+        let url = "http://localhost:8090/iserver/services/map-1/rest/maps/%E9%A3%8E%E5%9C%BA"
+      switch(type){
+          case 'wind':url =  "http://localhost:8090/iserver/services/map-1/rest/maps/%E9%A3%8E%E5%9C%BA"
+          break;
+          case 'pressure':url="http://localhost:8090/iserver/services/map-1/rest/maps/wc2_1_10m_srad_06%402"
+          break
+          case 'dswrf':url="http://localhost:8090/iserver/services/map-1/rest/maps/%E5%A4%AA%E9%98%B3%E8%BE%90%E5%B0%84"
+          break;
+          case 'tp':url="http://localhost:8090/iserver/services/map-1/rest/maps/%E9%99%8D%E6%B0%B4"
+          break;
+          case 'tavg':url = "http://localhost:8090/iserver/services/map-1/rest/maps/%E6%B8%A9%E5%BA%A6"
+          break;
+          case 'aqi':url = "http://localhost:8090/iserver/services/map-1/rest/maps/%E6%B0%B4%E8%92%B8%E6%B0%94%E5%8E%8B"
+          break
+          case 'pm25':url = "http://localhost:8090/iserver/services/map-1/rest/maps/PM25"
+          break;
+          default: url = "http://localhost:8090/iserver/services/map-1/rest/maps/wc2_1_10m_srad_06%402"
+          break;
+
+      }
+      var layerimg = new Cesium.SuperMapImageryProvider({
+        url: url  //影像服务的地址
+      });
+      var imgLayer = this.cesiumView.imageryLayers.addImageryProvider(layerimg)
+      var particleWindField = [];
+      var particleWindInverseField = [];
+      var dataChanged = false;
+      fieldLayer.particleVelocityFieldEffect.colorTable = colorTable;
+      let windData = {}
+      windData.nx = data[0].header.nx
+      windData.ny = data[0].header.ny
+      let p = 0
+      for (let j = 0; j < windData.ny; ++j) {
+        particleWindField[j] = [];
+        for (let i = 0; i < windData.nx; ++i) {
+          particleWindField[j][i] = [data[0].data[p], data[1].data[p]]
+          ++p
+        }
+      }
+      // console.log(particleWindField)
+      fieldLayer.fieldData = particleWindField;
+    }
   },
   watch: {
     windData () {
       //先移除图层
       this.removeVectorLayer()
+      this.removeCesiumLayer()
       if (this.baseLayerIndex == 0 && this.windFlag) {
         // 添加矢量图
         this.addVectorLayer("wind", this.windData);
         // 添加强度图
         this.addScalarLayer("wind", this.windData);
+        //三维矢量
+        this.addCesiumLayer("wind", this.windData)
       } else {
         // 重置所有图层
         this.resetMapLayer()
       }
     },
     waveData () {
-      //   console.log('sx')
       this.removeVectorLayer()
-      //   console.log(this.baseLayerIndex)
-      //   console.log(this.waveFlag)
+      this.removeCesiumLayer()
+
       if (this.baseLayerIndex == 1 && this.waveFlag) {
-        // console.log('sx')
-        // console.log(this.waveData)
         this.addVectorLayer('wave', this.waveData);
         this.addScalarLayer('wave', this.waveData)
-        // this.addHeatmap(this.waveHotData,'wave')
+        this.addCesiumLayer('wave', this.waveData)
       } else {
         this.resetMapLayer()
       }
     },
     seaTemperatureData () {
       this.removeVectorLayer()
+      this.removeCesiumLayer()
       if (this.baseLayerIndex == 2 && this.seaTemperatureFlag) {
         this.addScalarLayer('seaTemp', this.seaTemperatureData)
+        this.addCesiumLayer('seaTemp',this.seaTemperatureData)
         // this.addHeatmap(this.seaTemperatureData);
       } else {
         this.resetMapLayer();
@@ -537,9 +605,11 @@ export default {
     },
     currentData () {
       this.removeVectorLayer();
+      this.removeCesiumLayer()
       if (this.baseLayerIndex == 3 && this.currentFlag) {
         this.addVectorLayer('current', this.currentData);
         this.addScalarLayer('current', this.currentData)
+        this.addCesiumLayer('current', this.currentData)
         // this.addHeatmap(this.currentHotData,'current')
       } else {
         this.resetMapLayer()
@@ -547,9 +617,11 @@ export default {
     },
     airPressureData () {
       this.removeVectorLayer()
+      this.removeCesiumLayer()
       // console.log(this.airPressureFlag)
       if (this.baseLayerIndex == 4 && this.airPressureFlag) {
         this.addScalarLayer('pressure', this.airPressureData)
+        this.addCesiumLayer('pressure', this.airPressureData)
         // this.addHeatmap(this.airPressureData,'pressure');
       } else {
         this.resetMapLayer();
@@ -557,9 +629,10 @@ export default {
     },
     dswrfData () {
       this.removeVectorLayer()
+      this.removeCesiumLayer()
       if (this.baseLayerIndex == 5 && this.dswrfFlag) {
         this.addScalarLayer('dswrf', this.dswrfData)
-
+        this.addCesiumLayer('dswrf', this.dswrfData)
         //  this.addHeatmap(this.textData);
       } else {
         this.resetMapLayer();
@@ -568,9 +641,10 @@ export default {
     aqiData () {
       //   console.log('sx')
       this.removeVectorLayer()
-
+        this.removeCesiumLayer()
       if (this.baseLayerIndex == 6 && this.aqiFlag) {
         this.addScalarLayer('aqi', this.aqiData)
+        this.addCesiumLayer('aqi', this.aqiData)
         // console.log('sxx')
         //  this.addHeatmap(this.textData);
       } else {
@@ -579,9 +653,10 @@ export default {
     },
     coData () {
       this.removeVectorLayer()
+      this.removeCesiumLayer()
       if (this.baseLayerIndex == 7 && this.coFlag) {
         this.addScalarLayer('co', this.coData)
-
+        this.addCesiumLayer('co', this.coData)
         //  this.addHeatmap(this.textData);
       } else {
         this.resetMapLayer();
@@ -589,9 +664,10 @@ export default {
     },
     humidityData () {
       this.removeVectorLayer()
+      this.removeCesiumLayer()
       if (this.baseLayerIndex == 8 && this.humidityFlag) {
         this.addScalarLayer('humidity', this.humidityData)
-
+        this.addCesiumLayer('humidity', this.humidityData)
         //  this.addHeatmap(this.textData);
       } else {
         this.resetMapLayer();
@@ -599,8 +675,10 @@ export default {
     },
     pm25Data () {
       this.removeVectorLayer()
+      this.removeCesiumLayer()
       if (this.baseLayerIndex == 9 && this.pm25Flag) {
         this.addScalarLayer('pm25', this.pm25Data)
+        this.addCesiumLayer('pm25', this.pm25Data)
 
         //  this.addHeatmap(this.textData);
       } else {
@@ -608,19 +686,23 @@ export default {
       }
     },
     tavgData () {
-      console.log('sx')
+    //   console.log('sx')
+
       this.removeVectorLayer()
+      this.removeCesiumLayer()
       if (this.baseLayerIndex == 10 && this.tavgFlag) {
         this.addScalarLayer('tavg', this.tavgData)
+        this.addCesiumLayer('tavg', this.tavgData)
       } else {
         this.resetMapLayer();
       }
     },
     tpData () {
       this.removeVectorLayer()
+      this.removeCesiumLayer()
       if (this.baseLayerIndex == 11 && this.tpFlag) {
         this.addScalarLayer('tp', this.tpData)
-
+        this.addCesiumLayer('tp', this.tpData)
         //  this.addHeatmap(this.textData);
       } else {
         this.resetMapLayer();

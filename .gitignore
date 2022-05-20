@@ -4,6 +4,7 @@ node_modules
 
 /node_modules/
 /public/Cesium/
+/public/WEB3D/
 /src/mock/
 /handleData/
 *.tif
