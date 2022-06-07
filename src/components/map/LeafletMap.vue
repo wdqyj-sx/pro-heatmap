@@ -74,34 +74,40 @@ export default {
     ...mapState("moduleMap", {
       titleLayers: (state) => state.map.titleLayers,
       baseLayer: (state) => state.map.baseLayer,
-      windData: (state) => {
-        return state.map.windData;
-      },
-      waveData: state => state.map.waveData,
-      seaTemperatureData: state => state.map.seaTemperatureData,
-      currentData: state => state.map.currentData,
-      airPressureData: state => state.map.airPressureData,
-      dswrfData: state => state.map.dswrfData,
-      aqiData: state => state.map.aqiData,
-      coData: state => state.map.coData,
-      humidityData: state => state.map.humidityData,
-      pm25Data: state => state.map.pm25Data,
-      tavgData: state => state.map.tavgData,
-      tpData: state => state.map.tpData,
-
+      //   windData: (state) => {
+      //     return state.map.windData;
+      //   },
+      //   waveData: state => state.map.waveData,
+      //   seaTemperatureData: state => state.map.seaTemperatureData,
+      //   currentData: state => state.map.currentData,
+      //   airPressureData: state => state.map.airPressureData,
+      //   dswrfData: state => state.map.dswrfData,
+      //   aqiData: state => state.map.aqiData,
+      //   coData: state => state.map.coData,
+      //   humidityData: state => state.map.humidityData,
+      //   pm25Data: state => state.map.pm25Data,
+      //   tavgData: state => state.map.tavgData,
+      //   tpData: state => state.map.tpData,
+      tairData: state => state.map.tairData,
+      qairData: state => state.map.qairData,
+      so2MassData: state => state.map.so2MassData,
       baseLayerIndex: (state) => state.map.baseLayerIndex,
-      windFlag: (state) => state.map.baseLayer[0].active,
-      waveFlag: state => state.map.baseLayer[1].active,
-      seaTemperatureFlag: state => state.map.baseLayer[2].active,
-      currentFlag: state => state.map.baseLayer[3].active,
-      airPressureFlag: state => state.map.baseLayer[4].active,
-      dswrfFlag: state => state.map.baseLayer[5].active,
-      aqiFlag: state => state.map.baseLayer[6].active,
-      coFlag: state => state.map.baseLayer[7].active,
-      humidityFlag: state => state.map.baseLayer[8].active,
-      pm25Flag: state => state.map.baseLayer[9].active,
-      tavgFlag: state => state.map.baseLayer[10].active,
-      tpFlag: state => state.map.baseLayer[11].active,
+      tairFlag: state => state.map.baseLayer[0].active,
+      qairFlag: state => state.map.baseLayer[1].active,
+      so2MassFlag: state => state.map.baseLayer[2].active,
+
+      //   windFlag: (state) => state.map.baseLayer[0].active,
+      //   waveFlag: state => state.map.baseLayer[1].active,
+      //   seaTemperatureFlag: state => state.map.baseLayer[2].active,
+      //   currentFlag: state => state.map.baseLayer[3].active,
+      //   airPressureFlag: state => state.map.baseLayer[4].active,
+      //   dswrfFlag: state => state.map.baseLayer[5].active,
+      //   aqiFlag: state => state.map.baseLayer[6].active,
+      //   coFlag: state => state.map.baseLayer[7].active,
+      //   humidityFlag: state => state.map.baseLayer[8].active,
+      //   pm25Flag: state => state.map.baseLayer[9].active,
+      //   tavgFlag: state => state.map.baseLayer[10].active,
+      //   tpFlag: state => state.map.baseLayer[11].active,
 
       vectorAnimateSwitch: (state) => state.style.vectorAnimateSwitch, // // 全局 矢量动画 开关
       topoLayer: null, // 遮罩图层
@@ -255,44 +261,54 @@ export default {
     },
     //强度图
     addScalarLayer (type, data) {
+        console.log(type,data)
       let config = {};
       switch (type) {
-        case "wind":
-          config = { ...config, minValue: 0.01, maxValue: 30 };
-          break;
-        case 'wave':
-          config = { ...config, minValue: 0.01, maxValue: 9 }
-          break;
-        case 'current':
-          config = { ...config, minValue: 0.001, maxValue: 2 }
-          break;
+        // case "wind":
+        //   config = { ...config, minValue: 0.01, maxValue: 30 };
+        //   break;
+        // case 'wave':
+        //   config = { ...config, minValue: 0.01, maxValue: 9 }
+        //   break;
+        // case 'current':
+        //   config = { ...config, minValue: 0.001, maxValue: 2 }
+        //   break;
 
-        case 'seaTemp':
-          config = { ...config, minValue: 270, maxValue: 300 }
-          break;
-        case 'pressure':
-          config = { ...config, minValue: 99000, maxValue: 105000 }
-          break;
-        case 'dswrf':
-          config = { ...config, minValue: -1, maxValue: 60000 }
-          break;
-        case 'aqi':
-          config = { ...config, minValue: -1, maxValue: 35000 }
-          break;
-        case 'co':
-          // config = { ...config, minValue: -0.1, maxValue: 0.3 }
-          config = { ...config, minValue: 3, maxValue: 20 }
+        // case 'seaTemp':
+        //   config = { ...config, minValue: 270, maxValue: 300 }
+        //   break;
+        // case 'pressure':
+        //   config = { ...config, minValue: 99000, maxValue: 105000 }
+        //   break;
+        // case 'dswrf':
+        //   config = { ...config, minValue: -1, maxValue: 60000 }
+        //   break;
+        // case 'aqi':
+        //   config = { ...config, minValue: -1, maxValue: 35000 }
+        //   break;
+        // case 'co':
+        //   // config = { ...config, minValue: -0.1, maxValue: 0.3 }
+        //   config = { ...config, minValue: 3, maxValue: 20 }
 
+        //   break;
+        // case 'pm25':
+        //   config = { ...config, minValue: -18, maxValue: 17 }
+        //   break;
+        // case 'tavg':
+        //   //   config = { ...config, minValue: 50, maxValue: 250 }
+        //   config = { ...config, minValue: -45, maxValue: 32 }
+        //   break;
+        // case 'tp':
+        //   config = { ...config, minValue: -1, maxValue: 400 }
+        //   break;
+        case 'setTair':
+          config = { ...config, minValue: 228, maxValue: 309 }
           break;
-        case 'pm25':
-          config = { ...config, minValue: -18, maxValue: 17 }
+        case 'setQair':
+          config = { ...config, minValue: 4.6496279537678e-005, maxValue: 0.01 }
           break;
-        case 'tavg':
-          //   config = { ...config, minValue: 50, maxValue: 250 }
-          config = { ...config, minValue: -45, maxValue: 32 }
-          break;
-        case 'tp':
-          config = { ...config, minValue: -1, maxValue: 400 }
+        case 'setSo2Mass':
+          config = { ...config, minValue: 2.6610747026062e-3, maxValue: 10 }
           break;
         default:
           config = { ...config, minValue: -30.0, maxValue: 40 };
@@ -301,6 +317,7 @@ export default {
       if (this.scalarLayer) {
         this.removeScalarLayer()
       }
+      console.log(config)
       this.scalarLayer = new L.scalarLayer({
         displayValues: false,
         displayOptions: {
@@ -315,23 +332,7 @@ export default {
       //   console.log(this.scalarLayer)
 
       this.scalarLayer.onAdd(this.map);
-      let camvas = this.scalarLayer._canvasLayer.options.pane.children[0]
-      //     console.log(camvas)
-      //     function drawCanvas(){
-      //         return camvas
-      //     }
-      //   this.cesiumviewer.entities.add({
-      //     rectangle: {
-      //       coordinates: Cesium.Rectangle.fromDegrees(-180, -90, 180, 90),
-      //       //coordinates: new Cesium.BoundingRectangle(0,0,100,100),
-      //       material: new Cesium.ImageMaterialProperty({
-      //         image: new Cesium.CallbackProperty(drawCanvas, false),
-      //         transparent: true,
-      //       }),
-      //       rotation: Cesium.Math.toRadians(13),
-      //     }
-      //   })
-      // console.log(this.map.layers)
+    
       if (type == 'pressure' || type == "wind" || type == "wave") {
         //如果是压力、风场、海浪
         // 去除遮罩
@@ -520,30 +521,33 @@ export default {
       // fieldLayer.particleVelocityFieldEffect.particleLifeRange = 5
       fieldLayer.particleVelocityFieldEffect.paricleCountPerDegree = 1
       this.scene.primitives.add(fieldLayer); //添加场图层
-        let url = "http://localhost:8090/iserver/services/map-1/rest/maps/%E9%A3%8E%E5%9C%BA"
-      switch(type){
-          case 'wind':url =  "http://localhost:8090/iserver/services/map-1/rest/maps/%E9%A3%8E%E5%9C%BA"
+      let url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/%E9%A3%8E%E5%9C%BA"
+      switch (type) {
+        case 'wind': url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/%E9%A3%8E%E5%9C%BA"
           break;
-          case 'pressure':url="http://localhost:8090/iserver/services/map-1/rest/maps/wc2_1_10m_srad_06%402"
+        case 'pressure': url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/wc2_1_2_5m_tmax_2018_09%40sx"
           break
-          case 'dswrf':url="http://localhost:8090/iserver/services/map-1/rest/maps/%E5%A4%AA%E9%98%B3%E8%BE%90%E5%B0%84"
+        case 'dswrf': url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/%E5%A4%AA%E9%98%B3%E8%BE%90%E5%B0%84"
           break;
-          case 'tp':url="http://localhost:8090/iserver/services/map-1/rest/maps/%E9%99%8D%E6%B0%B4"
+        case 'tp': url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/%E9%99%8D%E6%B0%B4"
           break;
-          case 'tavg':url = "http://localhost:8090/iserver/services/map-1/rest/maps/%E6%B8%A9%E5%BA%A6"
+        case 'tavg': url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/%E6%B8%A9%E5%BA%A6"
           break;
-          case 'aqi':url = "http://localhost:8090/iserver/services/map-1/rest/maps/%E6%B0%B4%E8%92%B8%E6%B0%94%E5%8E%8B"
+        case 'aqi': url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/wc2_1_2_5m_tmin_2018_06%40sx"
           break
-          case 'pm25':url = "http://localhost:8090/iserver/services/map-1/rest/maps/PM25"
-          break;
-          default: url = "http://localhost:8090/iserver/services/map-1/rest/maps/wc2_1_10m_srad_06%402"
-          break;
+        //   case 'pm25':url = "http://localhost:8090/iserver/services/map-1/rest/maps/PM25"
+        //   break;
+        default: url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/%E9%A3%8E%E5%9C%BA"
+
 
       }
       var layerimg = new Cesium.SuperMapImageryProvider({
         url: url  //影像服务的地址
       });
       var imgLayer = this.cesiumView.imageryLayers.addImageryProvider(layerimg)
+      if (type !== 'wind' && type !== "wave") {
+        return;
+      }
       var particleWindField = [];
       var particleWindInverseField = [];
       var dataChanged = false;
@@ -564,145 +568,181 @@ export default {
     }
   },
   watch: {
-    windData () {
-      //先移除图层
-      this.removeVectorLayer()
-      this.removeCesiumLayer()
-      if (this.baseLayerIndex == 0 && this.windFlag) {
-        // 添加矢量图
-        this.addVectorLayer("wind", this.windData);
-        // 添加强度图
-        this.addScalarLayer("wind", this.windData);
-        //三维矢量
-        this.addCesiumLayer("wind", this.windData)
-      } else {
-        // 重置所有图层
-        this.resetMapLayer()
-      }
-    },
-    waveData () {
-      this.removeVectorLayer()
-      this.removeCesiumLayer()
+    // windData () {
+    //   //先移除图层
+    //   this.removeVectorLayer()
+    //   this.removeCesiumLayer()
+    //   if (this.baseLayerIndex == 0 && this.windFlag) {
+    //     // 添加矢量图
+    //     this.addVectorLayer("wind", this.windData);
+    //     // 添加强度图
+    //     this.addScalarLayer("wind", this.windData);
+    //     //三维矢量
+    //     this.addCesiumLayer("wind", this.windData)
+    //   } else {
+    //     // 重置所有图层
+    //     this.resetMapLayer()
+    //   }
+    // },
+    // waveData () {
+    //   this.removeVectorLayer()
+    //   this.removeCesiumLayer()
 
-      if (this.baseLayerIndex == 1 && this.waveFlag) {
-        this.addVectorLayer('wave', this.waveData);
-        this.addScalarLayer('wave', this.waveData)
-        this.addCesiumLayer('wave', this.waveData)
-      } else {
-        this.resetMapLayer()
-      }
-    },
-    seaTemperatureData () {
-      this.removeVectorLayer()
-      this.removeCesiumLayer()
-      if (this.baseLayerIndex == 2 && this.seaTemperatureFlag) {
-        this.addScalarLayer('seaTemp', this.seaTemperatureData)
-        this.addCesiumLayer('seaTemp',this.seaTemperatureData)
-        // this.addHeatmap(this.seaTemperatureData);
-      } else {
-        this.resetMapLayer();
-      }
-    },
-    currentData () {
-      this.removeVectorLayer();
-      this.removeCesiumLayer()
-      if (this.baseLayerIndex == 3 && this.currentFlag) {
-        this.addVectorLayer('current', this.currentData);
-        this.addScalarLayer('current', this.currentData)
-        this.addCesiumLayer('current', this.currentData)
-        // this.addHeatmap(this.currentHotData,'current')
-      } else {
-        this.resetMapLayer()
-      }
-    },
-    airPressureData () {
-      this.removeVectorLayer()
-      this.removeCesiumLayer()
-      // console.log(this.airPressureFlag)
-      if (this.baseLayerIndex == 4 && this.airPressureFlag) {
-        this.addScalarLayer('pressure', this.airPressureData)
-        this.addCesiumLayer('pressure', this.airPressureData)
-        // this.addHeatmap(this.airPressureData,'pressure');
-      } else {
-        this.resetMapLayer();
-      }
-    },
-    dswrfData () {
-      this.removeVectorLayer()
-      this.removeCesiumLayer()
-      if (this.baseLayerIndex == 5 && this.dswrfFlag) {
-        this.addScalarLayer('dswrf', this.dswrfData)
-        this.addCesiumLayer('dswrf', this.dswrfData)
-        //  this.addHeatmap(this.textData);
-      } else {
-        this.resetMapLayer();
-      }
-    },
-    aqiData () {
-      //   console.log('sx')
-      this.removeVectorLayer()
-        this.removeCesiumLayer()
-      if (this.baseLayerIndex == 6 && this.aqiFlag) {
-        this.addScalarLayer('aqi', this.aqiData)
-        this.addCesiumLayer('aqi', this.aqiData)
-        // console.log('sxx')
-        //  this.addHeatmap(this.textData);
-      } else {
-        this.resetMapLayer();
-      }
-    },
-    coData () {
-      this.removeVectorLayer()
-      this.removeCesiumLayer()
-      if (this.baseLayerIndex == 7 && this.coFlag) {
-        this.addScalarLayer('co', this.coData)
-        this.addCesiumLayer('co', this.coData)
-        //  this.addHeatmap(this.textData);
-      } else {
-        this.resetMapLayer();
-      }
-    },
-    humidityData () {
-      this.removeVectorLayer()
-      this.removeCesiumLayer()
-      if (this.baseLayerIndex == 8 && this.humidityFlag) {
-        this.addScalarLayer('humidity', this.humidityData)
-        this.addCesiumLayer('humidity', this.humidityData)
-        //  this.addHeatmap(this.textData);
-      } else {
-        this.resetMapLayer();
-      }
-    },
-    pm25Data () {
-      this.removeVectorLayer()
-      this.removeCesiumLayer()
-      if (this.baseLayerIndex == 9 && this.pm25Flag) {
-        this.addScalarLayer('pm25', this.pm25Data)
-        this.addCesiumLayer('pm25', this.pm25Data)
+    //   if (this.baseLayerIndex == 1 && this.waveFlag) {
+    //     this.addVectorLayer('wave', this.waveData);
+    //     this.addScalarLayer('wave', this.waveData)
+    //     this.addCesiumLayer('wave', this.waveData)
+    //   } else {
+    //     this.resetMapLayer()
+    //   }
+    // },
+    // seaTemperatureData () {
+    //   this.removeVectorLayer()
+    //   this.removeCesiumLayer()
+    //   if (this.baseLayerIndex == 2 && this.seaTemperatureFlag) {
+    //     this.addScalarLayer('seaTemp', this.seaTemperatureData)
+    //     this.addCesiumLayer('seaTemp', this.seaTemperatureData)
+    //     // this.addHeatmap(this.seaTemperatureData);
+    //   } else {
+    //     this.resetMapLayer();
+    //   }
+    // },
+    // currentData () {
+    //   this.removeVectorLayer();
+    //   this.removeCesiumLayer()
+    //   if (this.baseLayerIndex == 3 && this.currentFlag) {
+    //     this.addVectorLayer('current', this.currentData);
+    //     this.addScalarLayer('current', this.currentData)
+    //     this.addCesiumLayer('current', this.currentData)
+    //     // this.addHeatmap(this.currentHotData,'current')
+    //   } else {
+    //     this.resetMapLayer()
+    //   }
+    // },
+    // airPressureData () {
+    //   this.removeVectorLayer()
+    //   this.removeCesiumLayer()
+    //   // console.log(this.airPressureFlag)
+    //   if (this.baseLayerIndex == 4 && this.airPressureFlag) {
+    //     this.addScalarLayer('pressure', this.airPressureData)
+    //     this.addCesiumLayer('pressure', this.airPressureData)
+    //     // this.addHeatmap(this.airPressureData,'pressure');
+    //   } else {
+    //     this.resetMapLayer();
+    //   }
+    // },
+    // dswrfData () {
+    //   this.removeVectorLayer()
+    //   this.removeCesiumLayer()
+    //   if (this.baseLayerIndex == 5 && this.dswrfFlag) {
+    //     this.addScalarLayer('dswrf', this.dswrfData)
+    //     this.addCesiumLayer('dswrf', this.dswrfData)
+    //     //  this.addHeatmap(this.textData);
+    //   } else {
+    //     this.resetMapLayer();
+    //   }
+    // },
+    // aqiData () {
+    //   //   console.log('sx')
+    //   this.removeVectorLayer()
+    //   this.removeCesiumLayer()
+    //   if (this.baseLayerIndex == 6 && this.aqiFlag) {
+    //     this.addScalarLayer('aqi', this.aqiData)
+    //     this.addCesiumLayer('aqi', this.aqiData)
+    //     // console.log('sxx')
+    //     //  this.addHeatmap(this.textData);
+    //   } else {
+    //     this.resetMapLayer();
+    //   }
+    // },
+    // coData () {
+    //   this.removeVectorLayer()
+    //   this.removeCesiumLayer()
+    //   if (this.baseLayerIndex == 7 && this.coFlag) {
+    //     this.addScalarLayer('co', this.coData)
+    //     this.addCesiumLayer('co', this.coData)
+    //     //  this.addHeatmap(this.textData);
+    //   } else {
+    //     this.resetMapLayer();
+    //   }
+    // },
+    // humidityData () {
+    //   this.removeVectorLayer()
+    //   this.removeCesiumLayer()
+    //   if (this.baseLayerIndex == 8 && this.humidityFlag) {
+    //     this.addScalarLayer('humidity', this.humidityData)
+    //     this.addCesiumLayer('humidity', this.humidityData)
+    //     //  this.addHeatmap(this.textData);
+    //   } else {
+    //     this.resetMapLayer();
+    //   }
+    // },
+    // pm25Data () {
+    //   this.removeVectorLayer()
+    //   this.removeCesiumLayer()
+    //   if (this.baseLayerIndex == 9 && this.pm25Flag) {
+    //     this.addScalarLayer('pm25', this.pm25Data)
+    //     this.addCesiumLayer('pm25', this.pm25Data)
 
+    //     //  this.addHeatmap(this.textData);
+    //   } else {
+    //     this.resetMapLayer();
+    //   }
+    // },
+    // tavgData () {
+    //   //   console.log('sx')
+
+    //   this.removeVectorLayer()
+    //   this.removeCesiumLayer()
+    //   if (this.baseLayerIndex == 10 && this.tavgFlag) {
+    //     this.addScalarLayer('tavg', this.tavgData)
+    //     this.addCesiumLayer('tavg', this.tavgData)
+    //   } else {
+    //     this.resetMapLayer();
+    //   }
+    // },
+    // tpData () {
+    //   this.removeVectorLayer()
+    //   this.removeCesiumLayer()
+    //   if (this.baseLayerIndex == 11 && this.tpFlag) {
+    //     this.addScalarLayer('tp', this.tpData)
+    //     this.addCesiumLayer('tp', this.tpData)
+    //     //  this.addHeatmap(this.textData);
+    //   } else {
+    //     this.resetMapLayer();
+    //   }
+    // },
+    tairData () {
+      this.removeVectorLayer()
+      this.removeCesiumLayer()
+      console.log(this.tairData)
+      console.log(this.tairFlag)
+      console.log(this.baseLayerIndex)
+      if (this.baseLayerIndex == 0 && this.tairFlag) {
+        this.addScalarLayer('setTair', this.tairData)
+        this.addCesiumLayer('setTair', this.tairData)
         //  this.addHeatmap(this.textData);
       } else {
         this.resetMapLayer();
       }
     },
-    tavgData () {
-    //   console.log('sx')
-
+    qairData () {
       this.removeVectorLayer()
       this.removeCesiumLayer()
-      if (this.baseLayerIndex == 10 && this.tavgFlag) {
-        this.addScalarLayer('tavg', this.tavgData)
-        this.addCesiumLayer('tavg', this.tavgData)
+      if (this.baseLayerIndex == 1 && this.qairFlag) {
+        this.addScalarLayer('setQair', this.qairData)
+        this.addCesiumLayer('setQair', this.qairData)
+        //  this.addHeatmap(this.textData);
       } else {
         this.resetMapLayer();
       }
     },
-    tpData () {
+    so2MassData () {
       this.removeVectorLayer()
       this.removeCesiumLayer()
-      if (this.baseLayerIndex == 11 && this.tpFlag) {
-        this.addScalarLayer('tp', this.tpData)
-        this.addCesiumLayer('tp', this.tpData)
+      if (this.baseLayerIndex == 2 && this.so2MassFlag) {
+        this.addScalarLayer('setSo2Mass', this.so2MassData)
+        this.addCesiumLayer('setSo2Mass', this.so2MassData)
         //  this.addHeatmap(this.textData);
       } else {
         this.resetMapLayer();
