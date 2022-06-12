@@ -156,7 +156,7 @@ export default {
       },//
       timeValue: [0],
       timeLineMax: 168,
-      timeLineData: formatDateForTimeline('2020/1/1'),
+      timeLineData: formatDateForTimeline('2021/1/1'),
       baseMapLayerLegend: [
         ['℃', -45, -30, -15, 0, 15, 30, 45],
         // ['°C',-20,-10,0,10,20,30,40],
@@ -234,13 +234,14 @@ export default {
             index: index,
           });
         } else {
-          let activeItem = index != null ? this.baseLayer[index] : null;
-          if (activeItem) {
-            this.$store.dispatch("moduleMap/" + activeItem.layerType, {
-              flag: false,
-              index: index,
-            });
-          }
+        //   let activeItem = index != null ? this.baseLayer[index] : null;
+        //   if (activeItem) {
+            
+        //     this.$store.dispatch("moduleMap/" + activeItem.layerType, {
+        //       flag: false,
+        //       index: index,
+        //     });
+        //   }
           this.changeTimeLine(this.timeValue, index)
 
         }
@@ -308,28 +309,31 @@ export default {
     },
     playTimeLine () {
       //   let tt = this.baseLayerIndex == 0 || this.baseLayerIndex == 3 ? 5000 : 1500
+      let tt = 1500
       this.timeFlag = true
+      
       //   console.log(tt)
       //   console.log(this.timeValue)
       this._t = setInterval(() => {
 
         let { timeValue, timeLineMax } = this
         if (timeValue >= timeLineMax) {
-          this.stopTimeLine()
-          return false
+        //   this.stopTimeLine()
+        //   return false
+            this.timeValue = 0
         } else {
           this.timeValue = parseInt(timeValue) + 14
-          console.log(timeValue)
+        //   console.log(timeValue)
           this.inputTimeLine(this.timeValue, this.baseLayerIndex)
           // console.log(this.timeValue)
         }
-      }, 3000)
+      }, 1500)
     },
     inputTimeLine (v, i) {
-      let { time } = this.timeLineData
+     
       let index = i != null ? i : this.baseLayerIndex
       let item = this.baseLayer[index]
-      this.$store.dispatch('moduleMap/' + item.layerType, { flag: false, time: time[v], index: index })
+      this.$store.dispatch('moduleMap/' + item.layerType, { flag: false, time: v/14, index: index })
     },
     async querySearch (queryString, cb) {
       try {

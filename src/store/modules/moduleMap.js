@@ -610,12 +610,25 @@ export default {
         //     // console.log(payload)
         // },
         async setTair (context, payload) {
+            // console.log('sx')
             if (!payload.flag) {
+                let v = payload.time
+                if(!v){
+                    v = 0
+                }
                 context.commit('SET_LAYER_FLAG', false)
-                let resdata = await axios.get("http://localhost:3000/tair")
+                
+                // console.log(v)
+                let resdata = await axios.get("http://localhost:3000/tair",{
+                    params:{
+                        time:v
+                    }
+                })
                 let data = resdata.data
                 if (data.code == 0) {
                     let totalData = JSON.parse(data.data)
+                    // console.log(totalData)
+
                     payload.data = totalData
                     context.commit('SET_BASE_LAYER_INDEX', payload)
                     context.commit('SET_TAIR', payload)
@@ -632,8 +645,17 @@ export default {
         },
         async setQair (context, payload) {
             if (!payload.flag) {
+                let v = payload.time
+                if(!v){
+                    v = 0
+                }
                 context.commit('SET_LAYER_FLAG', false)
-                let resdata = await axios.get("http://localhost:3000/qair")
+                
+                let resdata = await axios.get("http://localhost:3000/qair",{
+                    params:{
+                        time:v
+                    }
+                })
                 let data = resdata.data
                 if (data.code == 0) {
                     let totalData = JSON.parse(data.data)
@@ -653,11 +675,21 @@ export default {
         },
         async setSo2Mass (context, payload) {
             if (!payload.flag) {
+                let v = payload.time
+                if(!v){
+                    v = 0
+                }
                 context.commit('SET_LAYER_FLAG', false)
-                let resdata = await axios.get("http://localhost:3000/so2mass")
+                let resdata = await axios.get("http://localhost:3000/so2mass",{
+                    params:{
+                        time:v
+                    }
+                })
+                
                 let data = resdata.data
                 if (data.code == 0) {
                     let totalData = JSON.parse(data.data)
+                    // console.log(totalData)
                     payload.data = totalData
                     context.commit('SET_BASE_LAYER_INDEX', payload)
                     context.commit('SET_SO2MASS', payload)

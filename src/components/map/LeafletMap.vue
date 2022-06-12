@@ -261,7 +261,7 @@ export default {
     },
     //强度图
     addScalarLayer (type, data) {
-        console.log(type,data)
+        // console.log(type,data)
       let config = {};
       switch (type) {
         // case "wind":
@@ -302,13 +302,13 @@ export default {
         //   config = { ...config, minValue: -1, maxValue: 400 }
         //   break;
         case 'setTair':
-          config = { ...config, minValue: 228, maxValue: 309 }
+          config = { ...config, minValue: 238, maxValue: 309 }
           break;
         case 'setQair':
           config = { ...config, minValue: 4.6496279537678e-005, maxValue: 0.01 }
           break;
         case 'setSo2Mass':
-          config = { ...config, minValue: 2.6610747026062e-3, maxValue: 10 }
+          config = { ...config, minValue: 2.66107e-3, maxValue: 8.04 }
           break;
         default:
           config = { ...config, minValue: -30.0, maxValue: 40 };
@@ -317,7 +317,7 @@ export default {
       if (this.scalarLayer) {
         this.removeScalarLayer()
       }
-      console.log(config)
+    //   console.log(config)
       this.scalarLayer = new L.scalarLayer({
         displayValues: false,
         displayOptions: {
@@ -438,7 +438,7 @@ export default {
       }
       let heatData = {};
       let config = { ...this.Global.map.heatmapConfg }, gradient = {};
-      console.log(config)
+    //   console.log(config)
       switch (type) {
         case 'pressure':
           heatData = { max: 1080, min: 990 }
@@ -486,12 +486,12 @@ export default {
           config = { ...config }
           break;
       }
-      console.log(config)
+    //   console.log(config)
       this.heatmapLayer = new HeatmapOverlay(config).addTo(this.map)
 
 
       heatData.data = data
-      console.log("热力图 开始..", type, data)
+    //   console.log("热力图 开始..", type, data)
       // let {cfg } =  this.heatmapLayer
       // this.heatmapLayer.cfg = {...cfg,...config}
       // this.heatmapLayer.configure(config).setData(heatData)
@@ -715,9 +715,9 @@ export default {
     tairData () {
       this.removeVectorLayer()
       this.removeCesiumLayer()
-      console.log(this.tairData)
-      console.log(this.tairFlag)
-      console.log(this.baseLayerIndex)
+    //   console.log(this.tairData)
+    //   console.log(this.tairFlag)
+    //   console.log(this.baseLayerIndex)
       if (this.baseLayerIndex == 0 && this.tairFlag) {
         this.addScalarLayer('setTair', this.tairData)
         this.addCesiumLayer('setTair', this.tairData)
