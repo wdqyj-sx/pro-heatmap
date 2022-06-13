@@ -261,7 +261,7 @@ export default {
     },
     //强度图
     addScalarLayer (type, data) {
-        // console.log(type,data)
+        console.log(type,data)
       let config = {};
       switch (type) {
         // case "wind":
@@ -305,7 +305,7 @@ export default {
           config = { ...config, minValue: 238, maxValue: 309 }
           break;
         case 'setQair':
-          config = { ...config, minValue: 4.6496279537678e-005, maxValue: 0.01 }
+          config = { ...config, minValue: 0, maxValue: 0.1 }
           break;
         case 'setSo2Mass':
           config = { ...config, minValue: 2.66107e-3, maxValue: 8.04 }
