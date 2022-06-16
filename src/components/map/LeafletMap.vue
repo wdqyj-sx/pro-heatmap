@@ -117,7 +117,7 @@ export default {
   },
   mounted () {
     this.initVueLeaflet();
-    this.initCesium()
+    // this.initCesium()
 
   },
   methods: {
@@ -217,95 +217,59 @@ export default {
       this.velocityLayer.onAdd(this.map);
     },
     // 加载 遮罩 图层
-    addMaskMap () {
-      //layer for disctrict
-      // 地图添加topojson图层
-      const districtLayer = (layer) => {
-        layer.setStyle({ fillColor: '#00192E', weight: 1.5, color: '#464849', opacity: 1, fillOpacity: 1 });
-      }
+    // addMaskMap () {
+    //   //layer for disctrict
+    //   // 地图添加topojson图层
+    //   const districtLayer = (layer) => {
+    //     layer.setStyle({ fillColor: '#00192E', weight: 1.5, color: '#464849', opacity: 1, fillOpacity: 1 });
+    //   }
 
-      if (this.topoLayer) {
-        this.topoLayer.addData(Geojson);
-        this.topoLayer.eachLayer(districtLayer);
-        this.topoLayer.addTo(this.map);
+    //   if (this.topoLayer) {
+    //     this.topoLayer.addData(Geojson);
+    //     this.topoLayer.eachLayer(districtLayer);
+    //     this.topoLayer.addTo(this.map);
 
-      } else {
-        //   console.log('sx')
-        //changing topojson to geojson
-        L.TopoJSON = L.GeoJSON.extend({
-          addData: function (jsonData) {
-            if (jsonData.type === "Topology") {
-              for (let key in jsonData.objects) {
-                if (jsonData.objects.hasOwnProperty(key)) {
-                  let geojson = topojson.feature(jsonData, jsonData.objects[key]);
-                  L.GeoJSON.prototype.addData.call(this, geojson);
-                }
-              }
-            } else {
-              L.GeoJSON.prototype.addData.call(this, jsonData);
-            }
-          }
-        });
+    //   } else {
+    //     //   console.log('sx')
+    //     //changing topojson to geojson
+    //     L.TopoJSON = L.GeoJSON.extend({
+    //       addData: function (jsonData) {
+    //         if (jsonData.type === "Topology") {
+    //           for (let key in jsonData.objects) {
+    //             if (jsonData.objects.hasOwnProperty(key)) {
+    //               let geojson = topojson.feature(jsonData, jsonData.objects[key]);
+    //               L.GeoJSON.prototype.addData.call(this, geojson);
+    //             }
+    //           }
+    //         } else {
+    //           L.GeoJSON.prototype.addData.call(this, jsonData);
+    //         }
+    //       }
+    //     });
 
-        // let topoLayer = new L.TopoJSON();
-        // console.log(topoLayer)
-        this.topoLayer = new L.TopoJSON();
+    //     // let topoLayer = new L.TopoJSON();
+    //     // console.log(topoLayer)
+    //     this.topoLayer = new L.TopoJSON();
 
-        // console.log()
-        // 读取json数据
-        this.topoLayer.addData(Geojson);
-        this.topoLayer.eachLayer(districtLayer);
-        this.topoLayer.addTo(this.map);
-        // console.log('加载 mask 图层')
-      }
-    },
+    //     // console.log()
+    //     // 读取json数据
+    //     this.topoLayer.addData(Geojson);
+    //     this.topoLayer.eachLayer(districtLayer);
+    //     this.topoLayer.addTo(this.map);
+    //     // console.log('加载 mask 图层')
+    //   }
+    // },
     //强度图
     addScalarLayer (type, data) {
         console.log(type,data)
       let config = {};
       switch (type) {
-        // case "wind":
-        //   config = { ...config, minValue: 0.01, maxValue: 30 };
-        //   break;
-        // case 'wave':
-        //   config = { ...config, minValue: 0.01, maxValue: 9 }
-        //   break;
-        // case 'current':
-        //   config = { ...config, minValue: 0.001, maxValue: 2 }
-        //   break;
-
-        // case 'seaTemp':
-        //   config = { ...config, minValue: 270, maxValue: 300 }
-        //   break;
-        // case 'pressure':
-        //   config = { ...config, minValue: 99000, maxValue: 105000 }
-        //   break;
-        // case 'dswrf':
-        //   config = { ...config, minValue: -1, maxValue: 60000 }
-        //   break;
-        // case 'aqi':
-        //   config = { ...config, minValue: -1, maxValue: 35000 }
-        //   break;
-        // case 'co':
-        //   // config = { ...config, minValue: -0.1, maxValue: 0.3 }
-        //   config = { ...config, minValue: 3, maxValue: 20 }
-
-        //   break;
-        // case 'pm25':
-        //   config = { ...config, minValue: -18, maxValue: 17 }
-        //   break;
-        // case 'tavg':
-        //   //   config = { ...config, minValue: 50, maxValue: 250 }
-        //   config = { ...config, minValue: -45, maxValue: 32 }
-        //   break;
-        // case 'tp':
-        //   config = { ...config, minValue: -1, maxValue: 400 }
-        //   break;
+      
         case 'setTair':
           config = { ...config, minValue: 238, maxValue: 309 }
           break;
         case 'setQair':
-          config = { ...config, minValue: 0, maxValue: 0.1 }
+          config = { ...config, minValue: 50, maxValue: 99 }
           break;
         case 'setSo2Mass':
           config = { ...config, minValue: 2.66107e-3, maxValue: 8.04 }
@@ -497,75 +461,75 @@ export default {
       // this.heatmapLayer.configure(config).setData(heatData)
       this.heatmapLayer.setData(heatData)
     },
-    removeCesiumLayer () {
-      this.scene.primitives.removeAll()
-      this.cesiumView.imageryLayers.removeAll()
-    },
-    addCesiumLayer (type, data) {
+    // removeCesiumLayer () {
+    //   this.scene.primitives.removeAll()
+    //   this.cesiumView.imageryLayers.removeAll()
+    // },
+    // addCesiumLayer (type, data) {
 
-      //   this.removeCesiumLayer()
-      var colorTable = new Cesium.ColorTable();
-      colorTable.insert(2, new Cesium.Color(254 / 255, 224 / 255, 139 / 255, 0.95));
-      colorTable.insert(2, new Cesium.Color(171 / 255, 221 / 255, 164 / 255, 0.95));
-      colorTable.insert(2, new Cesium.Color(104 / 255, 196 / 255, 160 / 255, 0.95));
-      colorTable.insert(4, new Cesium.Color(44 / 255, 185 / 255, 156 / 255, 0.95));
-      colorTable.insert(4, new Cesium.Color(25 / 255, 169 / 255, 178 / 255, 0.95));
-      colorTable.insert(7, new Cesium.Color(50 / 255, 136 / 255, 189 / 255, 0.95));
-      colorTable.insert(10, new Cesium.Color(31 / 255, 110 / 255, 183 / 255, 0.95));
-      colorTable.insert(15, new Cesium.Color(5 / 255, 98 / 255, 184 / 255, 0.95));
-      var fieldLayer = new Cesium.FieldLayer3D(this.scene.context); //场数据图层
-      fieldLayer.particleVelocityFieldEffect.velocityScale = 0.4 * 100.0; //初始化效果
-      fieldLayer.particleVelocityFieldEffect.particleSize = 1.2;
-      fieldLayer.particleVelocityFieldEffect.paricleCountPerDegree = 1.0;
-      fieldLayer.particleVelocityFieldEffect.particleSize = 1.2
-      // fieldLayer.particleVelocityFieldEffect.particleLifeRange = 5
-      fieldLayer.particleVelocityFieldEffect.paricleCountPerDegree = 1
-      this.scene.primitives.add(fieldLayer); //添加场图层
-      let url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/%E9%A3%8E%E5%9C%BA"
-      switch (type) {
-        case 'wind': url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/%E9%A3%8E%E5%9C%BA"
-          break;
-        case 'pressure': url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/wc2_1_2_5m_tmax_2018_09%40sx"
-          break
-        case 'dswrf': url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/%E5%A4%AA%E9%98%B3%E8%BE%90%E5%B0%84"
-          break;
-        case 'tp': url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/%E9%99%8D%E6%B0%B4"
-          break;
-        case 'tavg': url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/%E6%B8%A9%E5%BA%A6"
-          break;
-        case 'aqi': url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/wc2_1_2_5m_tmin_2018_06%40sx"
-          break
-        //   case 'pm25':url = "http://localhost:8090/iserver/services/map-1/rest/maps/PM25"
-        //   break;
-        default: url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/%E9%A3%8E%E5%9C%BA"
+    //   //   this.removeCesiumLayer()
+    //   var colorTable = new Cesium.ColorTable();
+    //   colorTable.insert(2, new Cesium.Color(254 / 255, 224 / 255, 139 / 255, 0.95));
+    //   colorTable.insert(2, new Cesium.Color(171 / 255, 221 / 255, 164 / 255, 0.95));
+    //   colorTable.insert(2, new Cesium.Color(104 / 255, 196 / 255, 160 / 255, 0.95));
+    //   colorTable.insert(4, new Cesium.Color(44 / 255, 185 / 255, 156 / 255, 0.95));
+    //   colorTable.insert(4, new Cesium.Color(25 / 255, 169 / 255, 178 / 255, 0.95));
+    //   colorTable.insert(7, new Cesium.Color(50 / 255, 136 / 255, 189 / 255, 0.95));
+    //   colorTable.insert(10, new Cesium.Color(31 / 255, 110 / 255, 183 / 255, 0.95));
+    //   colorTable.insert(15, new Cesium.Color(5 / 255, 98 / 255, 184 / 255, 0.95));
+    //   var fieldLayer = new Cesium.FieldLayer3D(this.scene.context); //场数据图层
+    //   fieldLayer.particleVelocityFieldEffect.velocityScale = 0.4 * 100.0; //初始化效果
+    //   fieldLayer.particleVelocityFieldEffect.particleSize = 1.2;
+    //   fieldLayer.particleVelocityFieldEffect.paricleCountPerDegree = 1.0;
+    //   fieldLayer.particleVelocityFieldEffect.particleSize = 1.2
+    //   // fieldLayer.particleVelocityFieldEffect.particleLifeRange = 5
+    //   fieldLayer.particleVelocityFieldEffect.paricleCountPerDegree = 1
+    //   this.scene.primitives.add(fieldLayer); //添加场图层
+    //   let url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/%E9%A3%8E%E5%9C%BA"
+    //   switch (type) {
+    //     case 'wind': url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/%E9%A3%8E%E5%9C%BA"
+    //       break;
+    //     case 'pressure': url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/wc2_1_2_5m_tmax_2018_09%40sx"
+    //       break
+    //     case 'dswrf': url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/%E5%A4%AA%E9%98%B3%E8%BE%90%E5%B0%84"
+    //       break;
+    //     case 'tp': url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/%E9%99%8D%E6%B0%B4"
+    //       break;
+    //     case 'tavg': url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/%E6%B8%A9%E5%BA%A6"
+    //       break;
+    //     case 'aqi': url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/wc2_1_2_5m_tmin_2018_06%40sx"
+    //       break
+    //     //   case 'pm25':url = "http://localhost:8090/iserver/services/map-1/rest/maps/PM25"
+    //     //   break;
+    //     default: url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/%E9%A3%8E%E5%9C%BA"
 
 
-      }
-      var layerimg = new Cesium.SuperMapImageryProvider({
-        url: url  //影像服务的地址
-      });
-      var imgLayer = this.cesiumView.imageryLayers.addImageryProvider(layerimg)
-      if (type !== 'wind' && type !== "wave") {
-        return;
-      }
-      var particleWindField = [];
-      var particleWindInverseField = [];
-      var dataChanged = false;
-      fieldLayer.particleVelocityFieldEffect.colorTable = colorTable;
-      let windData = {}
-      windData.nx = data[0].header.nx
-      windData.ny = data[0].header.ny
-      let p = 0
-      for (let j = 0; j < windData.ny; ++j) {
-        particleWindField[j] = [];
-        for (let i = 0; i < windData.nx; ++i) {
-          particleWindField[j][i] = [data[0].data[p], data[1].data[p]]
-          ++p
-        }
-      }
-      // console.log(particleWindField)
-      fieldLayer.fieldData = particleWindField;
-    }
+    //   }
+    //   var layerimg = new Cesium.SuperMapImageryProvider({
+    //     url: url  //影像服务的地址
+    //   });
+    //   var imgLayer = this.cesiumView.imageryLayers.addImageryProvider(layerimg)
+    //   if (type !== 'wind' && type !== "wave") {
+    //     return;
+    //   }
+    //   var particleWindField = [];
+    //   var particleWindInverseField = [];
+    //   var dataChanged = false;
+    //   fieldLayer.particleVelocityFieldEffect.colorTable = colorTable;
+    //   let windData = {}
+    //   windData.nx = data[0].header.nx
+    //   windData.ny = data[0].header.ny
+    //   let p = 0
+    //   for (let j = 0; j < windData.ny; ++j) {
+    //     particleWindField[j] = [];
+    //     for (let i = 0; i < windData.nx; ++i) {
+    //       particleWindField[j][i] = [data[0].data[p], data[1].data[p]]
+    //       ++p
+    //     }
+    //   }
+    //   // console.log(particleWindField)
+    //   fieldLayer.fieldData = particleWindField;
+    // }
   },
   watch: {
     // windData () {
@@ -714,13 +678,13 @@ export default {
     // },
     tairData () {
       this.removeVectorLayer()
-      this.removeCesiumLayer()
+    //   this.removeCesiumLayer()
     //   console.log(this.tairData)
     //   console.log(this.tairFlag)
     //   console.log(this.baseLayerIndex)
       if (this.baseLayerIndex == 0 && this.tairFlag) {
         this.addScalarLayer('setTair', this.tairData)
-        this.addCesiumLayer('setTair', this.tairData)
+        // this.addCesiumLayer('setTair', this.tairData)
         //  this.addHeatmap(this.textData);
       } else {
         this.resetMapLayer();
@@ -728,10 +692,10 @@ export default {
     },
     qairData () {
       this.removeVectorLayer()
-      this.removeCesiumLayer()
+    //   this.removeCesiumLayer()
       if (this.baseLayerIndex == 1 && this.qairFlag) {
         this.addScalarLayer('setQair', this.qairData)
-        this.addCesiumLayer('setQair', this.qairData)
+        // this.addCesiumLayer('setQair', this.qairData)
         //  this.addHeatmap(this.textData);
       } else {
         this.resetMapLayer();
@@ -739,10 +703,10 @@ export default {
     },
     so2MassData () {
       this.removeVectorLayer()
-      this.removeCesiumLayer()
+    //   this.removeCesiumLayer()
       if (this.baseLayerIndex == 2 && this.so2MassFlag) {
         this.addScalarLayer('setSo2Mass', this.so2MassData)
-        this.addCesiumLayer('setSo2Mass', this.so2MassData)
+        // this.addCesiumLayer('setSo2Mass', this.so2MassData)
         //  this.addHeatmap(this.textData);
       } else {
         this.resetMapLayer();
