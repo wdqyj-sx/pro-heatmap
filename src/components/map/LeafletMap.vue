@@ -91,11 +91,12 @@ export default {
       tairData: state => state.map.tairData,
       qairData: state => state.map.qairData,
       so2MassData: state => state.map.so2MassData,
+      windData: state => state.map.windData,
       baseLayerIndex: (state) => state.map.baseLayerIndex,
       tairFlag: state => state.map.baseLayer[0].active,
       qairFlag: state => state.map.baseLayer[1].active,
       so2MassFlag: state => state.map.baseLayer[2].active,
-
+      windFlag: state => state.map.baseLayer[3].active,
       //   windFlag: (state) => state.map.baseLayer[0].active,
       //   waveFlag: state => state.map.baseLayer[1].active,
       //   seaTemperatureFlag: state => state.map.baseLayer[2].active,
@@ -145,7 +146,7 @@ export default {
           this.waterDeep.flag = true;
         })
         setTimeout(() => {
-          this.initTitleLayer(2);
+          this.initTitleLayer(1);
         }, 1000);
       });
     },
@@ -164,7 +165,7 @@ export default {
     //加载图层
     // 加载风场 洋流图层 海浪图层 矢量
     addVectorLayer (type, data) {
-
+       
       let obj = {
         colorScale: [
           "rgb(222,255,253)",
@@ -175,7 +176,7 @@ export default {
         ],
         opacity: this.vectorAnimateSwitch ? 0.7 : 0,
       };
-      if (type == "wind") {
+      if (type == "setWind") {
         obj = {
           ...obj,
           maxVelocity: 35,
@@ -211,8 +212,6 @@ export default {
         },
         ...obj,
       });
-
-
       this.velocityLayer.setData(data);
       this.velocityLayer.onAdd(this.map);
     },
@@ -261,10 +260,8 @@ export default {
     // },
     //强度图
     addScalarLayer (type, data) {
-        console.log(type,data)
       let config = {};
       switch (type) {
-      
         case 'setTair':
           config = { ...config, minValue: 238, maxValue: 309 }
           break;
@@ -274,6 +271,9 @@ export default {
         case 'setSo2Mass':
           config = { ...config, minValue: 2.66107e-3, maxValue: 8.04 }
           break;
+        case 'setWind':
+          config = { ...config, minValue: -9, maxValue: 9 }
+          break;
         default:
           config = { ...config, minValue: -30.0, maxValue: 40 };
           break;
@@ -281,7 +281,7 @@ export default {
       if (this.scalarLayer) {
         this.removeScalarLayer()
       }
-    //   console.log(config)
+      //   console.log(config)
       this.scalarLayer = new L.scalarLayer({
         displayValues: false,
         displayOptions: {
@@ -291,12 +291,11 @@ export default {
         },
         ...config,
       });
-
       this.scalarLayer.setData(data);
       //   console.log(this.scalarLayer)
 
       this.scalarLayer.onAdd(this.map);
-    
+
       if (type == 'pressure' || type == "wind" || type == "wave") {
         //如果是压力、风场、海浪
         // 去除遮罩
@@ -350,40 +349,40 @@ export default {
         this.scalarLayer = null
       }
     },
-    initCesium () {
-      var viewer = new Cesium.Viewer('cesium-map', {
-        contextOptions: {
-          requestWebgl2: true
-        },
-        infobox: false,
-        skyAtmosphere: false
-      })
+    // initCesium () {
+    //   var viewer = new Cesium.Viewer('cesium-map', {
+    //     contextOptions: {
+    //       requestWebgl2: true
+    //     },
+    //     infobox: false,
+    //     skyAtmosphere: false
+    //   })
 
 
-      this.cesiumView = viewer
-      var scene = viewer.scene;
-      this.scene = scene
-      scene.skyBox.show = true;
-      viewer.scene.skyBox.show = true;
-      viewer.scene.sun.show = true;
-      viewer.scene.bloomEffect.show = false; //启用泛光效果
-      viewer.scene.bloomEffect.threshold = 0.6;
-      viewer.scene.bloomEffect.bloomIntensity = 0.6;
-      var promise = scene.open("http://www.supermapol.com/realspace/services/3D-ShiJieGuoJiaBianJie/rest/realspace");
-      Cesium.when.all(promise, function (layer) {
-        var layer1 = scene.layers.find("Country_Label@World");
-        var layerEffect1 = layer1.effect;
-        layerEffect1.setValue('Color', new Cesium.Color(255 * 1.5 / 255, 255 * 1.5 / 255, 255 * 1.5 / 255, 1));
-        layerEffect1.setValue('Width', 1.3);
+    //   this.cesiumView = viewer
+    //   var scene = viewer.scene;
+    //   this.scene = scene
+    //   scene.skyBox.show = true;
+    //   viewer.scene.skyBox.show = true;
+    //   viewer.scene.sun.show = true;
+    //   viewer.scene.bloomEffect.show = false; //启用泛光效果
+    //   viewer.scene.bloomEffect.threshold = 0.6;
+    //   viewer.scene.bloomEffect.bloomIntensity = 0.6;
+    //   var promise = scene.open("http://www.supermapol.com/realspace/services/3D-ShiJieGuoJiaBianJie/rest/realspace");
+    //   Cesium.when.all(promise, function (layer) {
+    //     var layer1 = scene.layers.find("Country_Label@World");
+    //     var layerEffect1 = layer1.effect;
+    //     layerEffect1.setValue('Color', new Cesium.Color(255 * 1.5 / 255, 255 * 1.5 / 255, 255 * 1.5 / 255, 1));
+    //     layerEffect1.setValue('Width', 1.3);
 
-        var layer3 = scene.layers.find("Ocean_Label@World");
-        var layerEffect3 = layer3.effect;
-        layerEffect3.setValue('Color', new Cesium.Color(255 * 1.5 / 255, 255 * 1.5 / 255, 255 * 1.5 / 255, 1));
-        layerEffect3.setValue('Width', 1.3);
-      })
+    //     var layer3 = scene.layers.find("Ocean_Label@World");
+    //     var layerEffect3 = layer3.effect;
+    //     layerEffect3.setValue('Color', new Cesium.Color(255 * 1.5 / 255, 255 * 1.5 / 255, 255 * 1.5 / 255, 1));
+    //     layerEffect3.setValue('Width', 1.3);
+    //   })
 
 
-    },
+    // },
     changeShow (e) {
 
       if (e == '二维') {
@@ -402,7 +401,7 @@ export default {
       }
       let heatData = {};
       let config = { ...this.Global.map.heatmapConfg }, gradient = {};
-    //   console.log(config)
+      //   console.log(config)
       switch (type) {
         case 'pressure':
           heatData = { max: 1080, min: 990 }
@@ -450,12 +449,12 @@ export default {
           config = { ...config }
           break;
       }
-    //   console.log(config)
+      //   console.log(config)
       this.heatmapLayer = new HeatmapOverlay(config).addTo(this.map)
 
 
       heatData.data = data
-    //   console.log("热力图 开始..", type, data)
+      //   console.log("热力图 开始..", type, data)
       // let {cfg } =  this.heatmapLayer
       // this.heatmapLayer.cfg = {...cfg,...config}
       // this.heatmapLayer.configure(config).setData(heatData)
@@ -532,22 +531,22 @@ export default {
     // }
   },
   watch: {
-    // windData () {
-    //   //先移除图层
-    //   this.removeVectorLayer()
+    windData () {
+      //先移除图层
+      this.removeVectorLayer()
     //   this.removeCesiumLayer()
-    //   if (this.baseLayerIndex == 0 && this.windFlag) {
-    //     // 添加矢量图
-    //     this.addVectorLayer("wind", this.windData);
-    //     // 添加强度图
-    //     this.addScalarLayer("wind", this.windData);
-    //     //三维矢量
-    //     this.addCesiumLayer("wind", this.windData)
-    //   } else {
-    //     // 重置所有图层
-    //     this.resetMapLayer()
-    //   }
-    // },
+      if (this.baseLayerIndex == 3 && this.windFlag) {
+        // 添加矢量图
+        this.addVectorLayer("setWind", this.windData);
+        // 添加强度图
+        this.addScalarLayer("setWind", this.windData);
+        //三维矢量
+        // this.addCesiumLayer("wind", this.windData)
+      } else {
+        // 重置所有图层
+        this.resetMapLayer()
+      }
+    },
     // waveData () {
     //   this.removeVectorLayer()
     //   this.removeCesiumLayer()
@@ -678,10 +677,10 @@ export default {
     // },
     tairData () {
       this.removeVectorLayer()
-    //   this.removeCesiumLayer()
-    //   console.log(this.tairData)
-    //   console.log(this.tairFlag)
-    //   console.log(this.baseLayerIndex)
+      //   this.removeCesiumLayer()
+      //   console.log(this.tairData)
+      //   console.log(this.tairFlag)
+      //   console.log(this.baseLayerIndex)
       if (this.baseLayerIndex == 0 && this.tairFlag) {
         this.addScalarLayer('setTair', this.tairData)
         // this.addCesiumLayer('setTair', this.tairData)
@@ -692,7 +691,7 @@ export default {
     },
     qairData () {
       this.removeVectorLayer()
-    //   this.removeCesiumLayer()
+      //   this.removeCesiumLayer()
       if (this.baseLayerIndex == 1 && this.qairFlag) {
         this.addScalarLayer('setQair', this.qairData)
         // this.addCesiumLayer('setQair', this.qairData)
@@ -703,7 +702,7 @@ export default {
     },
     so2MassData () {
       this.removeVectorLayer()
-    //   this.removeCesiumLayer()
+      //   this.removeCesiumLayer()
       if (this.baseLayerIndex == 2 && this.so2MassFlag) {
         this.addScalarLayer('setSo2Mass', this.so2MassData)
         // this.addCesiumLayer('setSo2Mass', this.so2MassData)

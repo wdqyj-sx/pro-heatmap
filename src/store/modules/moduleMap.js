@@ -4,6 +4,7 @@ const SET_BASE_LAYER_INDEX = "SET_BASE_LAYER_INDEX" //图层索引
 const SET_TAIR = "SET_TAIR"
 const SET_QAIR = "SET_QAIR"
 const SET_SO2MASS = "SET_SO2MASS"
+const SET_WIND = "SET_WIND"
 // const SET_WIND_DATA = "SET_WIND_DATA" //风场数据
 // const SET_AIR_PRESSURE_DATA = "SET_AIR_PRESSURE_DATA"; // 设置气压数据
 // const SET_DSWRF = "SET_DSWRF"; //测试数据
@@ -44,6 +45,7 @@ import axios from "axios"
 import tairIcon from "@/assets/myMap/气温.png"
 import qairIcon from "@/assets/myMap/相对湿度.png"
 import so2MassIcon from "@/assets/myMap/SO2.png"
+import windIcon from "@/assets/myMap/风场.png"
 export default {
     namespaced: true,
     state: {
@@ -110,6 +112,12 @@ export default {
                     layerName: "so2",
                     active: false,
                 },
+                {
+                    layerType: "setWind",
+                    layerIcon: windIcon,
+                    layerName: "风场",
+                    active: false,
+                },
             ],
             currentLat: 0.0,
             currentLng: 0.0,
@@ -120,9 +128,11 @@ export default {
             tairFlag: false,
             qairFlag: false,
             so2MassFlag: false,
+            windFlag:false,
             tairData: [],
             qairData: [],
             so2MassData: [],
+            windData:[],
             //   windFlag:false, // 风场开关
             //   windData:[],
             //   windHotData:[],
@@ -198,6 +208,11 @@ export default {
 
             state.map.so2MassFlag = !payload.flag
             state.map.so2MassData = payload.data
+            // state.map.windHotData = payload.hotData
+        },
+        [SET_WIND] (state, payload) {
+            state.map.windFlag = !payload.flag
+            state.map.windData = payload.data
             // state.map.windHotData = payload.hotData
         },
         // [SET_WIND_DATA](state,payload){
@@ -314,7 +329,45 @@ export default {
         //     // console.log(payload)
 
         // },
+        async setWind(context,payload){
+            if(!payload.flag){
+                let v = payload.time
+                if(!v){
+                    v = 0
+                }
+                context.commit('SET_LAYER_FLAG',false)
+                let resdata = await axios.get("http://localhost:3000/wind",{
+                    params:{
+                        time:v
+                    }
+                })
+                let data = resdata.data
 
+                if (data.code == 0) {
+                    let totalData = JSON.parse(data.data)
+                    // console.log(totalData)
+
+                    payload.data = totalData
+                    context.commit('SET_BASE_LAYER_INDEX', payload)
+                    context.commit('SET_WIND', payload)
+                    context.commit('SET_LAYER_FLAG', true)
+                }
+                else {
+                    payload.data = []
+                    context.commit('SET_WIND', payload)
+                    context.commit('SET_LAYER_FLAG', true)
+                    context.commit('SET_BASE_LAYER_INDEX', payload)
+
+                }
+            }
+            else {
+                        payload.data = null
+                        payload.hotData = null
+                        context.commit('SET_WIND', payload)
+                        context.commit('SET_LAYER_FLAG', true)
+                        context.commit('SET_BASE_LAYER_INDEX', payload)
+                    }
+        },
         async setTair (context, payload) {
             // console.log('sx')
             if (!payload.flag) {
@@ -334,7 +387,7 @@ export default {
 
                 if (data.code == 0) {
                     let totalData = JSON.parse(data.data)
-                    console.log(totalData)
+                    // console.log(totalData)
 
                     payload.data = totalData
                     context.commit('SET_BASE_LAYER_INDEX', payload)
@@ -348,6 +401,13 @@ export default {
                     context.commit('SET_BASE_LAYER_INDEX', payload)
 
                 }
+            }
+            else {
+                payload.data = null
+                payload.hotData = null
+                context.commit('SET_TAIR', payload)
+                context.commit('SET_LAYER_FLAG', true)
+                context.commit('SET_BASE_LAYER_INDEX', payload)
             }
         },
         async setQair (context, payload) {
@@ -378,6 +438,13 @@ export default {
                     context.commit('SET_BASE_LAYER_INDEX', payload)
 
                 }
+            }
+            else {
+                payload.data = null
+                payload.hotData = null
+                context.commit('SET_QAIR', payload)
+                context.commit('SET_LAYER_FLAG', true)
+                context.commit('SET_BASE_LAYER_INDEX', payload)
             }
         },
         async setSo2Mass (context, payload) {
@@ -410,6 +477,13 @@ export default {
 
                 }
                 
+            }
+            else {
+                payload.data = null
+                payload.hotData = null
+                context.commit('SET_SO2MASS', payload)
+                context.commit('SET_LAYER_FLAG', true)
+                context.commit('SET_BASE_LAYER_INDEX', payload)
             }
         },
         show3D (context, payload) {
