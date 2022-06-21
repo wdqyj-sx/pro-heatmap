@@ -92,11 +92,14 @@ export default {
       qairData: state => state.map.qairData,
       so2MassData: state => state.map.so2MassData,
       windData: state => state.map.windData,
+      clData:state => state.map.clData,
       baseLayerIndex: (state) => state.map.baseLayerIndex,
       tairFlag: state => state.map.baseLayer[0].active,
       qairFlag: state => state.map.baseLayer[1].active,
       so2MassFlag: state => state.map.baseLayer[2].active,
       windFlag: state => state.map.baseLayer[3].active,
+      clFlag: state => state.map.baseLayer[4].active,
+
       //   windFlag: (state) => state.map.baseLayer[0].active,
       //   waveFlag: state => state.map.baseLayer[1].active,
       //   seaTemperatureFlag: state => state.map.baseLayer[2].active,
@@ -119,7 +122,6 @@ export default {
   mounted () {
     this.initVueLeaflet();
     // this.initCesium()
-
   },
   methods: {
     //注册地图，地图监听
@@ -273,6 +275,9 @@ export default {
           break;
         case 'setWind':
           config = { ...config, minValue: -9, maxValue: 9 }
+          break;
+        case 'setCl':
+          config = { ...config, minValue: 5, maxValue: 15 }
           break;
         default:
           config = { ...config, minValue: -30.0, maxValue: 40 };
@@ -547,134 +552,7 @@ export default {
         this.resetMapLayer()
       }
     },
-    // waveData () {
-    //   this.removeVectorLayer()
-    //   this.removeCesiumLayer()
 
-    //   if (this.baseLayerIndex == 1 && this.waveFlag) {
-    //     this.addVectorLayer('wave', this.waveData);
-    //     this.addScalarLayer('wave', this.waveData)
-    //     this.addCesiumLayer('wave', this.waveData)
-    //   } else {
-    //     this.resetMapLayer()
-    //   }
-    // },
-    // seaTemperatureData () {
-    //   this.removeVectorLayer()
-    //   this.removeCesiumLayer()
-    //   if (this.baseLayerIndex == 2 && this.seaTemperatureFlag) {
-    //     this.addScalarLayer('seaTemp', this.seaTemperatureData)
-    //     this.addCesiumLayer('seaTemp', this.seaTemperatureData)
-    //     // this.addHeatmap(this.seaTemperatureData);
-    //   } else {
-    //     this.resetMapLayer();
-    //   }
-    // },
-    // currentData () {
-    //   this.removeVectorLayer();
-    //   this.removeCesiumLayer()
-    //   if (this.baseLayerIndex == 3 && this.currentFlag) {
-    //     this.addVectorLayer('current', this.currentData);
-    //     this.addScalarLayer('current', this.currentData)
-    //     this.addCesiumLayer('current', this.currentData)
-    //     // this.addHeatmap(this.currentHotData,'current')
-    //   } else {
-    //     this.resetMapLayer()
-    //   }
-    // },
-    // airPressureData () {
-    //   this.removeVectorLayer()
-    //   this.removeCesiumLayer()
-    //   // console.log(this.airPressureFlag)
-    //   if (this.baseLayerIndex == 4 && this.airPressureFlag) {
-    //     this.addScalarLayer('pressure', this.airPressureData)
-    //     this.addCesiumLayer('pressure', this.airPressureData)
-    //     // this.addHeatmap(this.airPressureData,'pressure');
-    //   } else {
-    //     this.resetMapLayer();
-    //   }
-    // },
-    // dswrfData () {
-    //   this.removeVectorLayer()
-    //   this.removeCesiumLayer()
-    //   if (this.baseLayerIndex == 5 && this.dswrfFlag) {
-    //     this.addScalarLayer('dswrf', this.dswrfData)
-    //     this.addCesiumLayer('dswrf', this.dswrfData)
-    //     //  this.addHeatmap(this.textData);
-    //   } else {
-    //     this.resetMapLayer();
-    //   }
-    // },
-    // aqiData () {
-    //   //   console.log('sx')
-    //   this.removeVectorLayer()
-    //   this.removeCesiumLayer()
-    //   if (this.baseLayerIndex == 6 && this.aqiFlag) {
-    //     this.addScalarLayer('aqi', this.aqiData)
-    //     this.addCesiumLayer('aqi', this.aqiData)
-    //     // console.log('sxx')
-    //     //  this.addHeatmap(this.textData);
-    //   } else {
-    //     this.resetMapLayer();
-    //   }
-    // },
-    // coData () {
-    //   this.removeVectorLayer()
-    //   this.removeCesiumLayer()
-    //   if (this.baseLayerIndex == 7 && this.coFlag) {
-    //     this.addScalarLayer('co', this.coData)
-    //     this.addCesiumLayer('co', this.coData)
-    //     //  this.addHeatmap(this.textData);
-    //   } else {
-    //     this.resetMapLayer();
-    //   }
-    // },
-    // humidityData () {
-    //   this.removeVectorLayer()
-    //   this.removeCesiumLayer()
-    //   if (this.baseLayerIndex == 8 && this.humidityFlag) {
-    //     this.addScalarLayer('humidity', this.humidityData)
-    //     this.addCesiumLayer('humidity', this.humidityData)
-    //     //  this.addHeatmap(this.textData);
-    //   } else {
-    //     this.resetMapLayer();
-    //   }
-    // },
-    // pm25Data () {
-    //   this.removeVectorLayer()
-    //   this.removeCesiumLayer()
-    //   if (this.baseLayerIndex == 9 && this.pm25Flag) {
-    //     this.addScalarLayer('pm25', this.pm25Data)
-    //     this.addCesiumLayer('pm25', this.pm25Data)
-
-    //     //  this.addHeatmap(this.textData);
-    //   } else {
-    //     this.resetMapLayer();
-    //   }
-    // },
-    // tavgData () {
-    //   //   console.log('sx')
-
-    //   this.removeVectorLayer()
-    //   this.removeCesiumLayer()
-    //   if (this.baseLayerIndex == 10 && this.tavgFlag) {
-    //     this.addScalarLayer('tavg', this.tavgData)
-    //     this.addCesiumLayer('tavg', this.tavgData)
-    //   } else {
-    //     this.resetMapLayer();
-    //   }
-    // },
-    // tpData () {
-    //   this.removeVectorLayer()
-    //   this.removeCesiumLayer()
-    //   if (this.baseLayerIndex == 11 && this.tpFlag) {
-    //     this.addScalarLayer('tp', this.tpData)
-    //     this.addCesiumLayer('tp', this.tpData)
-    //     //  this.addHeatmap(this.textData);
-    //   } else {
-    //     this.resetMapLayer();
-    //   }
-    // },
     tairData () {
       this.removeVectorLayer()
       //   this.removeCesiumLayer()
@@ -707,6 +585,15 @@ export default {
         this.addScalarLayer('setSo2Mass', this.so2MassData)
         // this.addCesiumLayer('setSo2Mass', this.so2MassData)
         //  this.addHeatmap(this.textData);
+      } else {
+        this.resetMapLayer();
+      }
+    },
+    clData () {
+      this.removeVectorLayer()
+      //   this.removeCesiumLayer()
+      if (this.baseLayerIndex == 4 && this.clFlag) {
+        this.addScalarLayer('setCl', this.clData)
       } else {
         this.resetMapLayer();
       }

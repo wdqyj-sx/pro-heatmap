@@ -5,6 +5,7 @@ const SET_TAIR = "SET_TAIR"
 const SET_QAIR = "SET_QAIR"
 const SET_SO2MASS = "SET_SO2MASS"
 const SET_WIND = "SET_WIND"
+const SET_CL = "SET_CL"
 // const SET_WIND_DATA = "SET_WIND_DATA" //风场数据
 // const SET_AIR_PRESSURE_DATA = "SET_AIR_PRESSURE_DATA"; // 设置气压数据
 // const SET_DSWRF = "SET_DSWRF"; //测试数据
@@ -46,6 +47,7 @@ import tairIcon from "@/assets/myMap/气温.png"
 import qairIcon from "@/assets/myMap/相对湿度.png"
 import so2MassIcon from "@/assets/myMap/SO2.png"
 import windIcon from "@/assets/myMap/风场.png"
+import clIcon from "@/assets/myMap/cl.png"
 export default {
     namespaced: true,
     state: {
@@ -118,6 +120,12 @@ export default {
                     layerName: "风场",
                     active: false,
                 },
+                {
+                    layerType:"setCl",
+                    layerIcon:clIcon,
+                    layerName:'cl-',
+                    active:false
+                }
             ],
             currentLat: 0.0,
             currentLng: 0.0,
@@ -129,10 +137,13 @@ export default {
             qairFlag: false,
             so2MassFlag: false,
             windFlag:false,
+            clFlag:false,
             tairData: [],
             qairData: [],
             so2MassData: [],
             windData:[],
+            clData:[],
+
             //   windFlag:false, // 风场开关
             //   windData:[],
             //   windHotData:[],
@@ -213,6 +224,11 @@ export default {
         [SET_WIND] (state, payload) {
             state.map.windFlag = !payload.flag
             state.map.windData = payload.data
+            // state.map.windHotData = payload.hotData
+        },
+        [SET_CL] (state, payload) {
+            state.map.clFlag = !payload.flag
+            state.map.clData = payload.data
             // state.map.windHotData = payload.hotData
         },
         // [SET_WIND_DATA](state,payload){
@@ -480,8 +496,47 @@ export default {
             }
             else {
                 payload.data = null
-                payload.hotData = null
+                // payload.hotData = null
                 context.commit('SET_SO2MASS', payload)
+                context.commit('SET_LAYER_FLAG', true)
+                context.commit('SET_BASE_LAYER_INDEX', payload)
+            }
+        },
+        async setCl (context, payload) {
+            if (!payload.flag) {
+                let v = payload.time
+                if(!v){
+                    v = 0
+                }
+                context.commit('SET_LAYER_FLAG', false)
+                let resdata = await axios.get("http://localhost:3000/text",{
+                    params:{
+                        time:v
+                    }
+                })
+                
+                let data = resdata.data
+                if (data.code == 0) {
+                    let totalData = JSON.parse(data.data)
+                    // console.log(totalData)
+                    payload.data = totalData
+                    context.commit('SET_BASE_LAYER_INDEX', payload)
+                    context.commit('SET_CL', payload)
+                    context.commit('SET_LAYER_FLAG', true)
+                }
+                else {
+                    payload.data = []
+                    context.commit('SET_CL', payload)
+                    context.commit('SET_LAYER_FLAG', true)
+                    context.commit('SET_BASE_LAYER_INDEX', payload)
+
+                }
+                
+            }
+            else {
+                payload.data = null
+                // payload.hotData = null
+                context.commit('SET_CL', payload)
                 context.commit('SET_LAYER_FLAG', true)
                 context.commit('SET_BASE_LAYER_INDEX', payload)
             }
