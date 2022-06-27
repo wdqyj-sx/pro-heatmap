@@ -74,45 +74,21 @@ export default {
     ...mapState("moduleMap", {
       titleLayers: (state) => state.map.titleLayers,
       baseLayer: (state) => state.map.baseLayer,
-      //   windData: (state) => {
-      //     return state.map.windData;
-      //   },
-      //   waveData: state => state.map.waveData,
-      //   seaTemperatureData: state => state.map.seaTemperatureData,
-      //   currentData: state => state.map.currentData,
-      //   airPressureData: state => state.map.airPressureData,
-      //   dswrfData: state => state.map.dswrfData,
-      //   aqiData: state => state.map.aqiData,
-      //   coData: state => state.map.coData,
-      //   humidityData: state => state.map.humidityData,
-      //   pm25Data: state => state.map.pm25Data,
-      //   tavgData: state => state.map.tavgData,
-      //   tpData: state => state.map.tpData,
       tairData: state => state.map.tairData,
       qairData: state => state.map.qairData,
       so2MassData: state => state.map.so2MassData,
       windData: state => state.map.windData,
-      clData:state => state.map.clData,
+      clData: state => state.map.clData,
+      ssfluxuData: state => state.map.ssfluxuData,
+      ssfluxvData: state => state.map.ssfluxvData,
       baseLayerIndex: (state) => state.map.baseLayerIndex,
       tairFlag: state => state.map.baseLayer[0].active,
       qairFlag: state => state.map.baseLayer[1].active,
       so2MassFlag: state => state.map.baseLayer[2].active,
       windFlag: state => state.map.baseLayer[3].active,
       clFlag: state => state.map.baseLayer[4].active,
-
-      //   windFlag: (state) => state.map.baseLayer[0].active,
-      //   waveFlag: state => state.map.baseLayer[1].active,
-      //   seaTemperatureFlag: state => state.map.baseLayer[2].active,
-      //   currentFlag: state => state.map.baseLayer[3].active,
-      //   airPressureFlag: state => state.map.baseLayer[4].active,
-      //   dswrfFlag: state => state.map.baseLayer[5].active,
-      //   aqiFlag: state => state.map.baseLayer[6].active,
-      //   coFlag: state => state.map.baseLayer[7].active,
-      //   humidityFlag: state => state.map.baseLayer[8].active,
-      //   pm25Flag: state => state.map.baseLayer[9].active,
-      //   tavgFlag: state => state.map.baseLayer[10].active,
-      //   tpFlag: state => state.map.baseLayer[11].active,
-
+      ssfluxuFlag: state => state.map.baseLayer[5].active,
+      ssfluxvFlag: state => state.map.baseLayer[6].active,
       vectorAnimateSwitch: (state) => state.style.vectorAnimateSwitch, // // 全局 矢量动画 开关
       topoLayer: null, // 遮罩图层
       currentShowData: state => state.map.currentShowData,
@@ -148,7 +124,7 @@ export default {
           this.waterDeep.flag = true;
         })
         setTimeout(() => {
-          this.initTitleLayer(1);
+          this.initTitleLayer(4);
         }, 1000);
       });
     },
@@ -167,7 +143,7 @@ export default {
     //加载图层
     // 加载风场 洋流图层 海浪图层 矢量
     addVectorLayer (type, data) {
-       
+
       let obj = {
         colorScale: [
           "rgb(222,255,253)",
@@ -262,6 +238,7 @@ export default {
     // },
     //强度图
     addScalarLayer (type, data) {
+        console.log(type,data)
       let config = {};
       switch (type) {
         case 'setTair':
@@ -277,7 +254,13 @@ export default {
           config = { ...config, minValue: -9, maxValue: 9 }
           break;
         case 'setCl':
-          config = { ...config, minValue: 5, maxValue: 15 }
+          config = { ...config, minValue: 5.5, maxValue: 15 }
+          break;
+        case 'setSsfluxu':
+          config = { ...config, minValue: -0.2, maxValue: 1.2 }
+          break;
+        case 'setSsfluxv':
+          config = { ...config, minValue: -0.5, maxValue: 0.5 }
           break;
         default:
           config = { ...config, minValue: -30.0, maxValue: 40 };
@@ -539,7 +522,7 @@ export default {
     windData () {
       //先移除图层
       this.removeVectorLayer()
-    //   this.removeCesiumLayer()
+      //   this.removeCesiumLayer()
       if (this.baseLayerIndex == 3 && this.windFlag) {
         // 添加矢量图
         this.addVectorLayer("setWind", this.windData);
@@ -594,6 +577,24 @@ export default {
       //   this.removeCesiumLayer()
       if (this.baseLayerIndex == 4 && this.clFlag) {
         this.addScalarLayer('setCl', this.clData)
+      } else {
+        this.resetMapLayer();
+      }
+    },
+    ssfluxuData () {
+      this.removeVectorLayer()
+      //   this.removeCesiumLayer()
+      if (this.baseLayerIndex == 5 && this.ssfluxuFlag) {
+        this.addScalarLayer('setSsfluxu', this.ssfluxuData)
+      } else {
+        this.resetMapLayer();
+      }
+    },
+    ssfluxvData () {
+      this.removeVectorLayer()
+      //   this.removeCesiumLayer()
+      if (this.baseLayerIndex == 6 && this.ssfluxvFlag) {
+        this.addScalarLayer('setSsfluxv', this.ssfluxvData)
       } else {
         this.resetMapLayer();
       }

@@ -6,6 +6,8 @@ const SET_QAIR = "SET_QAIR"
 const SET_SO2MASS = "SET_SO2MASS"
 const SET_WIND = "SET_WIND"
 const SET_CL = "SET_CL"
+const SET_SSFLUXU = "SET_SSFLUXU"
+const SET_SSFLUXV = "SET_SSFLUXV"
 // const SET_WIND_DATA = "SET_WIND_DATA" //风场数据
 // const SET_AIR_PRESSURE_DATA = "SET_AIR_PRESSURE_DATA"; // 设置气压数据
 // const SET_DSWRF = "SET_DSWRF"; //测试数据
@@ -48,6 +50,7 @@ import qairIcon from "@/assets/myMap/相对湿度.png"
 import so2MassIcon from "@/assets/myMap/SO2.png"
 import windIcon from "@/assets/myMap/风场.png"
 import clIcon from "@/assets/myMap/cl.png"
+import ssflux from "@/assets/myMap/ssflux.png"
 export default {
     namespaced: true,
     state: {
@@ -69,31 +72,7 @@ export default {
                     url: "http://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}",
                 }, // 高德矢量
             ],
-            //   baseLayer: [
-            //     {
-            //       layerType: "setWindData",
-            //       layerIcon: windIcon,
-            //       layerName: "风场",
-            //       active: false,
-            //     },
-            //     // {layerType:'setAirTemperatureData',layerIcon:temperatureIcon,layerName:'气温',active:false},
-            //     {
-            //       layerType: "setWaveData",
-            //       layerIcon: waveIcon,
-            //       layerName: "海浪",
-            //       active: false,
-            //     },
-            //     {layerType:'setSeaTemperatureData',layerIcon: seaTemperatureIcon,layerName:'海温',active:false},
-            //     {layerType:'setCurrentData',layerIcon: oceanCurrentIcon,layerName:'洋流',active:false},
-            //     {layerType:'setAirPressureData',layerIcon: airPressureIcon,layerName:'气压',active:false},
-            //     {layerType:'setDswrf',layerIcon:fushe,layerName:'辐射量',active:false},
-            //     {layerType:'setAqi',layerIcon:kongqizhiliang,layerName:'水蒸气压',active:false},
-            //     {layerType:'setCo',layerIcon:co1,layerName:'一氧化碳',active:false},
-            //     {layerType:'setHumidity',layerIcon:xiangduishidu,layerName:'相对湿度',active:false},
-            //     {layerType:'setPm25',layerIcon:pm25Icon,layerName:'PM2.5',active:false},
-            //     {layerType:'setTavg',layerIcon:wendu,layerName:'温度',active:false},
-            //     {layerType:'setTp',layerIcon:jiangshuiliang,layerName:'降水量',active:false}
-            //     // {layerType:'setSaltData',layerIcon: salinityIcon,layerName:'盐度',active:false},
+          
             //   ],
             baseLayer: [
                 {
@@ -125,6 +104,17 @@ export default {
                     layerIcon:clIcon,
                     layerName:'cl-',
                     active:false
+                },{
+                    layerType:"setSsfluxu",
+                    layerIcon:ssflux,
+                    layerName:"ssfluxu",
+                    active:false
+                },
+                {
+                    layerType:"setSsfluxv",
+                    layerIcon:ssflux,
+                    layerName:"ssfluxv",
+                    active:false
                 }
             ],
             currentLat: 0.0,
@@ -138,11 +128,15 @@ export default {
             so2MassFlag: false,
             windFlag:false,
             clFlag:false,
+            ssfluxuFlag:false,
+            ssfluxvFlag:false,
             tairData: [],
             qairData: [],
             so2MassData: [],
             windData:[],
             clData:[],
+            ssfluxuData:[],
+            ssfluxvData:[],
 
             //   windFlag:false, // 风场开关
             //   windData:[],
@@ -229,6 +223,16 @@ export default {
         [SET_CL] (state, payload) {
             state.map.clFlag = !payload.flag
             state.map.clData = payload.data
+            // state.map.windHotData = payload.hotData
+        },
+        [SET_SSFLUXU] (state, payload) {
+            state.map.ssfluxuFlag = !payload.flag
+            state.map.ssfluxuData = payload.data
+            // state.map.windHotData = payload.hotData
+        },
+        [SET_SSFLUXV] (state, payload) {
+            state.map.ssfluxvFlag = !payload.flag
+            state.map.ssfluxvData = payload.data
             // state.map.windHotData = payload.hotData
         },
         // [SET_WIND_DATA](state,payload){
@@ -518,7 +522,7 @@ export default {
                 let data = resdata.data
                 if (data.code == 0) {
                     let totalData = JSON.parse(data.data)
-                    // console.log(totalData)
+                    console.log(totalData)
                     payload.data = totalData
                     context.commit('SET_BASE_LAYER_INDEX', payload)
                     context.commit('SET_CL', payload)
@@ -537,6 +541,82 @@ export default {
                 payload.data = null
                 // payload.hotData = null
                 context.commit('SET_CL', payload)
+                context.commit('SET_LAYER_FLAG', true)
+                context.commit('SET_BASE_LAYER_INDEX', payload)
+            }
+        },
+        async setSsfluxu (context, payload) {
+            if (!payload.flag) {
+                let v = payload.time
+                if(!v){
+                    v = 0
+                }
+                context.commit('SET_LAYER_FLAG', false)
+                let resdata = await axios.get("http://localhost:3000/ssfluxu",{
+                    params:{
+                        time:v
+                    }
+                })
+                
+                let data = resdata.data
+                if (data.code == 0) {
+                    let totalData = JSON.parse(data.data)
+                    payload.data = totalData
+                    context.commit('SET_BASE_LAYER_INDEX', payload)
+                    context.commit('SET_SSFLUXU', payload)
+                    context.commit('SET_LAYER_FLAG', true)
+                }
+                else {
+                    payload.data = []
+                    context.commit('SET_SSFLUXU', payload)
+                    context.commit('SET_LAYER_FLAG', true)
+                    context.commit('SET_BASE_LAYER_INDEX', payload)
+
+                }
+                
+            }
+            else {
+                payload.data = null
+                // payload.hotData = null
+                context.commit('SET_SSFLUXU', payload)
+                context.commit('SET_LAYER_FLAG', true)
+                context.commit('SET_BASE_LAYER_INDEX', payload)
+            }
+        },
+        async setSsfluxv (context, payload) {
+            if (!payload.flag) {
+                let v = payload.time
+                if(!v){
+                    v = 0
+                }
+                context.commit('SET_LAYER_FLAG', false)
+                let resdata = await axios.get("http://localhost:3000/ssfluxv",{
+                    params:{
+                        time:v
+                    }
+                })
+                
+                let data = resdata.data
+                if (data.code == 0) {
+                    let totalData = JSON.parse(data.data)
+                    payload.data = totalData
+                    context.commit('SET_BASE_LAYER_INDEX', payload)
+                    context.commit('SET_SSFLUXV', payload)
+                    context.commit('SET_LAYER_FLAG', true)
+                }
+                else {
+                    payload.data = []
+                    context.commit('SET_SSFLUXV', payload)
+                    context.commit('SET_LAYER_FLAG', true)
+                    context.commit('SET_BASE_LAYER_INDEX', payload)
+
+                }
+                
+            }
+            else {
+                payload.data = null
+                // payload.hotData = null
+                context.commit('SET_SSFLUXV', payload)
                 context.commit('SET_LAYER_FLAG', true)
                 context.commit('SET_BASE_LAYER_INDEX', payload)
             }
