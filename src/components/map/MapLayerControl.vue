@@ -43,7 +43,7 @@
     <div
       class="map-time-legend"
       :class="{ 'map-time-legend-phone': isMobile }"
-      :style="{ width: TimeLineWidth + 'px' }"
+      :style="{ width: TimeLineWidth-100 + 'px' }"
       v-show="showTimeLine"
     >
       <div class="time-line" :class="{ 'time-line-phone': isMobile }">
@@ -160,13 +160,13 @@ export default {
       baseMapLayerLegend: [
         ['℃', -45, -30, -15, 0, 15, 30, 45],
         // ['°C',-20,-10,0,10,20,30,40],
-        ['g kg-1', 0, 3, 6, 9, 12, 15,18, 20],
-        ['μg m-3', 0, 0.08, 0.8, 8, 80],
+        ['g/kg', 0, 3, 6, 9, 12, 15,18, 20],
+        ['μg.m-3', 0, 0.08, 0.8, 8, 80],
         ['m/s', 1, 4, 7, 10, 13,16,19],
         ['mg/m2', 5, 7, 9, 11, 13,15],
-        ['g m-1 s-1',-1.5,-1,-0.5,0,0.5,1,1.5,2],
-        ['g m-1 s-1',-0.2,-0.15,-0.1,-0.05,0,0.05,0.1]
-
+        ['g/m.s',-1.5,-1,-0.5,0,0.5,1,1.5,2],
+        ['g/m.s',-0.2,-0.15,-0.1,-0.05,0,0.05,0.1],
+        ['level', 1,2,3,4,5]
 
         // ['m/s', 0, 0.1, 0.5, 1, 1.5, 2, 2.5, 3, 3.5],
         // ['hPa', 995, 1001, 1007, 1013, 1019, 1025],
@@ -598,34 +598,42 @@ export default {
       }
     }
     .map-legend {
-      width: 300px;
-      height: 20px;
+        position: absolute;
+        right: -7%;
+        bottom: 5px;
+      width: 30px;
+      height: 300px;
       display: flex;
       align-items: center;
       margin-bottom: 10px;
       .legend-bg {
         transition: all 0.3s;
-        height: 20px;
+        height: 300px;
         display: flex;
+        flex-direction: column;
         align-items: center;
-        border-radius: 20px;
-        width: 100%;
-        margin-left: 20px;
-        box-shadow: 0px 2px 4px #2f332a;
-        padding: 0 5px;
+        border-radius: 5px;
+        justify-content: center;
+        // margin-left: 20px;
+        // box-shadow: 0px 2px 4px #2f332a;
+        padding: 5px 5px;
         span {
+            display: block;
+            word-wrap: break-word;
+            width: 32px;
           text-align: center;
-          font-size: 14px;
+          font-size: 12px;
           font-weight: 400;
           color: #ffffff;
           flex: 1;
+
           /*padding-left: 10px;*/
         }
       }
 
       .layer0 {
         background: linear-gradient(
-          to right,
+          to bottom,
           rgba(90, 86, 143, 1),
           rgba(72, 104, 181, 1),
           rgba(69, 151, 168, 1),
@@ -642,7 +650,7 @@ export default {
       }
       .layer1 {
         background: linear-gradient(
-          to right,
+          to bottom,
           rgba(90, 86, 143, 1),
           rgba(72, 104, 181, 1),
           rgba(69, 151, 168, 1),
@@ -659,7 +667,7 @@ export default {
       }
       .layer2 {
         background: linear-gradient(
-          to right,
+          to bottom,
           rgba(90, 86, 143, 1),
           rgba(72, 104, 181, 1),
           rgba(69, 151, 168, 1),
@@ -676,7 +684,7 @@ export default {
       }
       .layer3 {
         background: linear-gradient(
-          to right,
+          to bottom,
           rgba(90, 86, 143, 1),
           rgba(72, 104, 181, 1),
           rgba(69, 151, 168, 1),
@@ -693,7 +701,7 @@ export default {
       }
       .layer4 {
         background: linear-gradient(
-          to right,
+          to bottom,
           rgba(90, 86, 143, 1),
           rgba(72, 104, 181, 1),
           rgba(69, 151, 168, 1),
@@ -710,7 +718,7 @@ export default {
       }
       .layer5 {
         background: linear-gradient(
-          to right,
+          to bottom,
           rgba(90, 86, 143, 1),
           rgba(72, 104, 181, 1),
           rgba(69, 151, 168, 1),
@@ -732,7 +740,7 @@ export default {
       .layer10,
       .layer11 {
         background: linear-gradient(
-          to right,
+          to bottom,
           rgba(90, 86, 143, 1),
           rgba(72, 104, 181, 1),
           rgba(69, 151, 168, 1),

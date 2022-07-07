@@ -81,12 +81,14 @@ export default {
       clData: state => state.map.clData,
       ssfluxuData: state => state.map.ssfluxuData,
       ssfluxvData: state => state.map.ssfluxvData,
+      icorrData:state => state.map.icorrData,
       baseLayerIndex: (state) => state.map.baseLayerIndex,
       tairFlag: state => state.map.baseLayer[0].active,
       qairFlag: state => state.map.baseLayer[1].active,
       so2MassFlag: state => state.map.baseLayer[2].active,
       windFlag: state => state.map.baseLayer[3].active,
       clFlag: state => state.map.baseLayer[4].active,
+      icorrFlag:state => state.map.baseLayer[7].active,
       ssfluxuFlag: state => state.map.baseLayer[5].active,
       ssfluxvFlag: state => state.map.baseLayer[6].active,
       vectorAnimateSwitch: (state) => state.style.vectorAnimateSwitch, // // 全局 矢量动画 开关
@@ -143,7 +145,7 @@ export default {
     //加载图层
     // 加载风场 洋流图层 海浪图层 矢量
     addVectorLayer (type, data) {
-
+        console.log(type)
       let obj = {
         colorScale: [
           "rgb(222,255,253)",
@@ -157,10 +159,11 @@ export default {
       if (type == "setWind") {
         obj = {
           ...obj,
-          maxVelocity: 35,
-          lineWidth: 1,
+          minVelocity:0,
+          maxVelocity: 55,
+          lineWidth: 3,
           particleMultiplier: 1 / 500,
-          frameRate: 20,
+          frameRate: 50,
         };
       } else if (type == 'wave') {
         obj = {
@@ -251,7 +254,7 @@ export default {
           config = { ...config, minValue: 2.66107e-3, maxValue: 8.04 }
           break;
         case 'setWind':
-          config = { ...config, minValue: -9, maxValue: 9 }
+          config = { ...config, minValue: -5, maxValue: 14 }
           break;
         case 'setCl':
           config = { ...config, minValue: 5.5, maxValue: 15 }
@@ -261,6 +264,9 @@ export default {
           break;
         case 'setSsfluxv':
           config = { ...config, minValue: -0.5, maxValue: 0.5 }
+          break;
+        case 'setIcorr':
+          config = { ...config, minValue: 1.15, maxValue: 3.85 }
           break;
         default:
           config = { ...config, minValue: -30.0, maxValue: 40 };
@@ -383,7 +389,7 @@ export default {
     //加载热力图
     addHeatmap (data, type) {
       // this.resetMapLayer();
-      // console.log(data)
+      console.log(type)
       if (this.heatmapLayer != null) {
         this.heatmapLayer.onRemove(this.map)
       }
@@ -431,7 +437,12 @@ export default {
             // gradient: {   "0.99": "rgba(255,0,0,1)", /* 颜色过渡*/ "0.75": "rgba(255,255,0,1)", "0.5": "rgba(0,255,0,1)", "0.25": "rgba(0,255,255,1)", "0": "rgba(0,0,255,1)"}
           }
           break;
-
+        case 'setIcorr':
+            heatData = { max:3,min:2}
+            config = {
+                ...config,radius:0.4
+            }
+            break
         default:
           heatData = { max: 100, min: 0 }
           config = { ...config }
@@ -595,6 +606,15 @@ export default {
       //   this.removeCesiumLayer()
       if (this.baseLayerIndex == 6 && this.ssfluxvFlag) {
         this.addScalarLayer('setSsfluxv', this.ssfluxvData)
+      } else {
+        this.resetMapLayer();
+      }
+    },
+    icorrData(){
+         this.removeVectorLayer()
+      //   this.removeCesiumLayer()
+      if (this.baseLayerIndex == 7 && this.icorrFlag) {
+        this.addScalarLayer('setIcorr', this.icorrData)
       } else {
         this.resetMapLayer();
       }
