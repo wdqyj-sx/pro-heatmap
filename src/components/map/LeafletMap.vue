@@ -99,7 +99,7 @@ export default {
   },
   mounted () {
     this.initVueLeaflet();
-    // this.initCesium()
+    this.initCesium()
   },
   methods: {
     //注册地图，地图监听
@@ -126,7 +126,7 @@ export default {
           this.waterDeep.flag = true;
         })
         setTimeout(() => {
-          this.initTitleLayer(4);
+          this.initTitleLayer(2);
         }, 1000);
       });
     },
@@ -343,40 +343,40 @@ export default {
         this.scalarLayer = null
       }
     },
-    // initCesium () {
-    //   var viewer = new Cesium.Viewer('cesium-map', {
-    //     contextOptions: {
-    //       requestWebgl2: true
-    //     },
-    //     infobox: false,
-    //     skyAtmosphere: false
-    //   })
+    initCesium () {
+      var viewer = new Cesium.Viewer('cesium-map', {
+        contextOptions: {
+          requestWebgl2: true
+        },
+        infobox: false,
+        skyAtmosphere: false
+      })
 
 
-    //   this.cesiumView = viewer
-    //   var scene = viewer.scene;
-    //   this.scene = scene
-    //   scene.skyBox.show = true;
-    //   viewer.scene.skyBox.show = true;
-    //   viewer.scene.sun.show = true;
-    //   viewer.scene.bloomEffect.show = false; //启用泛光效果
-    //   viewer.scene.bloomEffect.threshold = 0.6;
-    //   viewer.scene.bloomEffect.bloomIntensity = 0.6;
-    //   var promise = scene.open("http://www.supermapol.com/realspace/services/3D-ShiJieGuoJiaBianJie/rest/realspace");
-    //   Cesium.when.all(promise, function (layer) {
-    //     var layer1 = scene.layers.find("Country_Label@World");
-    //     var layerEffect1 = layer1.effect;
-    //     layerEffect1.setValue('Color', new Cesium.Color(255 * 1.5 / 255, 255 * 1.5 / 255, 255 * 1.5 / 255, 1));
-    //     layerEffect1.setValue('Width', 1.3);
+      this.cesiumView = viewer
+      var scene = viewer.scene;
+      this.scene = scene
+      scene.skyBox.show = true;
+      viewer.scene.skyBox.show = true;
+      viewer.scene.sun.show = true;
+      viewer.scene.bloomEffect.show = false; //启用泛光效果
+      viewer.scene.bloomEffect.threshold = 0.6;
+      viewer.scene.bloomEffect.bloomIntensity = 0.6;
+      var promise = scene.open("http://www.supermapol.com/realspace/services/3D-ShiJieGuoJiaBianJie/rest/realspace");
+      Cesium.when.all(promise, function (layer) {
+        var layer1 = scene.layers.find("Country_Label@World");
+        var layerEffect1 = layer1.effect;
+        layerEffect1.setValue('Color', new Cesium.Color(255 * 1.5 / 255, 255 * 1.5 / 255, 255 * 1.5 / 255, 1));
+        layerEffect1.setValue('Width', 1.3);
 
-    //     var layer3 = scene.layers.find("Ocean_Label@World");
-    //     var layerEffect3 = layer3.effect;
-    //     layerEffect3.setValue('Color', new Cesium.Color(255 * 1.5 / 255, 255 * 1.5 / 255, 255 * 1.5 / 255, 1));
-    //     layerEffect3.setValue('Width', 1.3);
-    //   })
+        var layer3 = scene.layers.find("Ocean_Label@World");
+        var layerEffect3 = layer3.effect;
+        layerEffect3.setValue('Color', new Cesium.Color(255 * 1.5 / 255, 255 * 1.5 / 255, 255 * 1.5 / 255, 1));
+        layerEffect3.setValue('Width', 1.3);
+      })
 
 
-    // },
+    },
     changeShow (e) {
 
       if (e == '二维') {
@@ -459,75 +459,75 @@ export default {
       // this.heatmapLayer.configure(config).setData(heatData)
       this.heatmapLayer.setData(heatData)
     },
-    // removeCesiumLayer () {
-    //   this.scene.primitives.removeAll()
-    //   this.cesiumView.imageryLayers.removeAll()
-    // },
-    // addCesiumLayer (type, data) {
+    removeCesiumLayer () {
+      this.scene.primitives.removeAll()
+      this.cesiumView.imageryLayers.removeAll()
+    },
+    addCesiumLayer (type, data) {
 
-    //   //   this.removeCesiumLayer()
-    //   var colorTable = new Cesium.ColorTable();
-    //   colorTable.insert(2, new Cesium.Color(254 / 255, 224 / 255, 139 / 255, 0.95));
-    //   colorTable.insert(2, new Cesium.Color(171 / 255, 221 / 255, 164 / 255, 0.95));
-    //   colorTable.insert(2, new Cesium.Color(104 / 255, 196 / 255, 160 / 255, 0.95));
-    //   colorTable.insert(4, new Cesium.Color(44 / 255, 185 / 255, 156 / 255, 0.95));
-    //   colorTable.insert(4, new Cesium.Color(25 / 255, 169 / 255, 178 / 255, 0.95));
-    //   colorTable.insert(7, new Cesium.Color(50 / 255, 136 / 255, 189 / 255, 0.95));
-    //   colorTable.insert(10, new Cesium.Color(31 / 255, 110 / 255, 183 / 255, 0.95));
-    //   colorTable.insert(15, new Cesium.Color(5 / 255, 98 / 255, 184 / 255, 0.95));
-    //   var fieldLayer = new Cesium.FieldLayer3D(this.scene.context); //场数据图层
-    //   fieldLayer.particleVelocityFieldEffect.velocityScale = 0.4 * 100.0; //初始化效果
-    //   fieldLayer.particleVelocityFieldEffect.particleSize = 1.2;
-    //   fieldLayer.particleVelocityFieldEffect.paricleCountPerDegree = 1.0;
-    //   fieldLayer.particleVelocityFieldEffect.particleSize = 1.2
-    //   // fieldLayer.particleVelocityFieldEffect.particleLifeRange = 5
-    //   fieldLayer.particleVelocityFieldEffect.paricleCountPerDegree = 1
-    //   this.scene.primitives.add(fieldLayer); //添加场图层
-    //   let url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/%E9%A3%8E%E5%9C%BA"
-    //   switch (type) {
-    //     case 'wind': url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/%E9%A3%8E%E5%9C%BA"
-    //       break;
-    //     case 'pressure': url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/wc2_1_2_5m_tmax_2018_09%40sx"
-    //       break
-    //     case 'dswrf': url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/%E5%A4%AA%E9%98%B3%E8%BE%90%E5%B0%84"
-    //       break;
-    //     case 'tp': url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/%E9%99%8D%E6%B0%B4"
-    //       break;
-    //     case 'tavg': url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/%E6%B8%A9%E5%BA%A6"
-    //       break;
-    //     case 'aqi': url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/wc2_1_2_5m_tmin_2018_06%40sx"
-    //       break
-    //     //   case 'pm25':url = "http://localhost:8090/iserver/services/map-1/rest/maps/PM25"
-    //     //   break;
-    //     default: url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/%E9%A3%8E%E5%9C%BA"
+      //   this.removeCesiumLayer()
+      var colorTable = new Cesium.ColorTable();
+      colorTable.insert(2, new Cesium.Color(254 / 255, 224 / 255, 139 / 255, 0.95));
+      colorTable.insert(2, new Cesium.Color(171 / 255, 221 / 255, 164 / 255, 0.95));
+      colorTable.insert(2, new Cesium.Color(104 / 255, 196 / 255, 160 / 255, 0.95));
+      colorTable.insert(4, new Cesium.Color(44 / 255, 185 / 255, 156 / 255, 0.95));
+      colorTable.insert(4, new Cesium.Color(25 / 255, 169 / 255, 178 / 255, 0.95));
+      colorTable.insert(7, new Cesium.Color(50 / 255, 136 / 255, 189 / 255, 0.95));
+      colorTable.insert(10, new Cesium.Color(31 / 255, 110 / 255, 183 / 255, 0.95));
+      colorTable.insert(15, new Cesium.Color(5 / 255, 98 / 255, 184 / 255, 0.95));
+      var fieldLayer = new Cesium.FieldLayer3D(this.scene.context); //场数据图层
+      fieldLayer.particleVelocityFieldEffect.velocityScale = 0.4 * 100.0; //初始化效果
+      fieldLayer.particleVelocityFieldEffect.particleSize = 1.2;
+      fieldLayer.particleVelocityFieldEffect.paricleCountPerDegree = 1.0;
+      fieldLayer.particleVelocityFieldEffect.particleSize = 1.2
+      // fieldLayer.particleVelocityFieldEffect.particleLifeRange = 5
+      fieldLayer.particleVelocityFieldEffect.paricleCountPerDegree = 1
+      this.scene.primitives.add(fieldLayer); //添加场图层
+      let url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/%E9%A3%8E%E5%9C%BA"
+      switch (type) {
+        case 'wind': url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/%E9%A3%8E%E5%9C%BA"
+          break;
+        case 'pressure': url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/wc2_1_2_5m_tmax_2018_09%40sx"
+          break
+        case 'dswrf': url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/%E5%A4%AA%E9%98%B3%E8%BE%90%E5%B0%84"
+          break;
+        case 'tp': url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/%E9%99%8D%E6%B0%B4"
+          break;
+        case 'tavg': url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/%E6%B8%A9%E5%BA%A6"
+          break;
+        case 'aqi': url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/wc2_1_2_5m_tmin_2018_06%40sx"
+          break
+        //   case 'pm25':url = "http://localhost:8090/iserver/services/map-1/rest/maps/PM25"
+        //   break;
+        default: url = "http://101.35.202.152:8090/iserver/services/map-sx/rest/maps/%E9%A3%8E%E5%9C%BA"
 
 
-    //   }
-    //   var layerimg = new Cesium.SuperMapImageryProvider({
-    //     url: url  //影像服务的地址
-    //   });
-    //   var imgLayer = this.cesiumView.imageryLayers.addImageryProvider(layerimg)
-    //   if (type !== 'wind' && type !== "wave") {
-    //     return;
-    //   }
-    //   var particleWindField = [];
-    //   var particleWindInverseField = [];
-    //   var dataChanged = false;
-    //   fieldLayer.particleVelocityFieldEffect.colorTable = colorTable;
-    //   let windData = {}
-    //   windData.nx = data[0].header.nx
-    //   windData.ny = data[0].header.ny
-    //   let p = 0
-    //   for (let j = 0; j < windData.ny; ++j) {
-    //     particleWindField[j] = [];
-    //     for (let i = 0; i < windData.nx; ++i) {
-    //       particleWindField[j][i] = [data[0].data[p], data[1].data[p]]
-    //       ++p
-    //     }
-    //   }
-    //   // console.log(particleWindField)
-    //   fieldLayer.fieldData = particleWindField;
-    // }
+      }
+      var layerimg = new Cesium.SuperMapImageryProvider({
+        url: url  //影像服务的地址
+      });
+      var imgLayer = this.cesiumView.imageryLayers.addImageryProvider(layerimg)
+      if (type !== 'wind' && type !== "wave") {
+        return;
+      }
+      var particleWindField = [];
+      var particleWindInverseField = [];
+      var dataChanged = false;
+      fieldLayer.particleVelocityFieldEffect.colorTable = colorTable;
+      let windData = {}
+      windData.nx = data[0].header.nx
+      windData.ny = data[0].header.ny
+      let p = 0
+      for (let j = 0; j < windData.ny; ++j) {
+        particleWindField[j] = [];
+        for (let i = 0; i < windData.nx; ++i) {
+          particleWindField[j][i] = [data[0].data[p], data[1].data[p]]
+          ++p
+        }
+      }
+      // console.log(particleWindField)
+      fieldLayer.fieldData = particleWindField;
+    }
   },
   watch: {
     windData () {
