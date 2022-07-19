@@ -128,6 +128,7 @@ export default {
                 lng: '',
                 title: ''
             },
+            currentData:null
         },
         style: {
             vectorAnimateSwitch: true, // 全局 图层 矢量动画 开关
@@ -139,6 +140,9 @@ export default {
         [SET_LATLNG] (state, payload) {
             state.map.currentLat = latlngChangeToDMS(payload.lat);
             state.map.currentLng = latlngChangeToDMS(payload.lng);
+        },
+        ['SET_CURRENT_DATA'](state,payload){
+            state.map.currentData = payload
         },
         [SET_LAYER_FLAG] (state, payload) {
             state.map.layerFlag = payload;
@@ -198,7 +202,7 @@ export default {
             state.map.currentShowData.data = payload.showValue
             state.map.currentShowData.lat = payload.lat.toFixed(2)
             state.map.currentShowData.lng = payload.lng.toFixed(2)
-            state.map.currentShowData.title = payload.titleName == '' ? '数据' : payload.titleName
+            state.map.currentShowData.title = state.map.baseLayer[payload.baseLayerIndex].layerName
         },
         [SET_SHOW3D] (state, payload) {
             let eventFlag = payload.eventFlag
@@ -211,31 +215,93 @@ export default {
                 state.map.show3D = true
             }
             // console.log(state.map.show3D)
-        }
+        },
+        
+        
     },
     actions: {
 
-        // setWindData (context, payload) {
-
-        //     if (!payload.flag) {
-        //         //调整图层开关
-        //         context.commit('SET_LAYER_FLAG', false)
-        //         //
-        //         context.commit('SET_BASE_LAYER_INDEX', payload)
-        //         let dat = JSON.parse(demo.windData.data)
-        //         payload.data = dat.dataJson
-        //         context.commit('SET_WIND_DATA', payload)
-        //         context.commit('SET_LAYER_FLAG', true)
-
-        //     }
-        //     else {
-        //         payload.data = null
-        //         payload.hotData = null
-        //         context.commit('SET_WIND_DATA', payload)
-        //         context.commit('SET_LAYER_FLAG', true)
-        //         context.commit('SET_BASE_LAYER_INDEX', payload)
-        //     }
-        //     // console.log(payload)
+        setShowData (context, payload) {
+                // console.log(context,payload)
+                let res = {}
+                let { lat, lng } = payload
+                res.lat = lat
+                res.lng = lng
+                let currentData = payload.currentData
+                let baseLayerIndex = payload.baseLayerIndex
+              
+                // res.layerType = payload.layerType
+                // let layerDataName = ''
+                // let titleName = ''
+                // switch (layerType) {
+                //     case 'setTair':
+                //         layerDataName = 'windData'
+                //         titleName = '气温'
+                //         break;
+                //     case 'setWaveData':
+                //         layerDataName = 'seaWaveData'
+                //         titleName = '海浪值'
+    
+                //         break;
+                //     case 'setSeaTemperatureData':
+                //         layerDataName = 'temperatureData'
+                //         titleName = '海温值'
+    
+                //         break;
+                //     case 'setCurrentData':
+                //         layerDataName = 'seaCurrentData'
+                //         titleName = '洋流值'
+                //         break;
+                //     case 'setAirPressureData':
+                //         layerDataName = 'pressureData'
+                //         titleName = '气压值'
+                //         break;
+                //     case 'SET':
+                //         layerDataName = 'text'
+                //         titleName = '测试'
+                //         break;
+                //     case 'setHumidity':
+                //         layerDataName = 'humidity'
+                //         titleName = '相对湿度'
+                //         break;
+                // }
+                // if (layerDataName != '') {
+                //     let file = demo[layerDataName].data
+                //     // console.log(file)
+                //     const dat = JSON.parse(file)
+                //     // console.log(dat)
+                //     let { header, data } = dat.dataJson[0]
+                //     let { la1, lo1, dx, dy } = header
+                //     //计算坐标所在栅格
+                //     console.log(lat, lng)
+                //     let row = Math.floor(Math.abs(lat - la1) / dx)
+                //     let col = Math.floor(Math.abs(lo1 - lng) / dy)
+                //     console.log(row, col)
+                //     let index = row * dx + col
+    
+                //     // console.log(data)
+                //     let showValue = data[index]
+                //     console.log(showValue)
+                //     res.showValue = showValue.toFixed(2)
+                //     res.titleName = titleName
+                //     // console.log(parseInt(showValue))
+                //     context.commit('SET_CURRENT_SHOW_DATA', res)
+                // }
+                let {header,data} = currentData.data[0]
+                let { la1, lo1, dx, dy } = header
+                //     //计算坐标所在栅格
+                    
+                    let row = Math.floor(Math.abs(lat - la1) / dx)
+                    let col = Math.floor(Math.abs(lo1 - lng) / dy)
+                   
+                    let index = Math.floor(row * dx + col)
+                    let showValue = data[index]
+                  
+                    res.showValue = showValue.toFixed(2)
+                    res.baseLayerIndex = baseLayerIndex
+                    context.commit('SET_CURRENT_SHOW_DATA',res)
+                    
+            },
 
         // },
         async setWind(context,payload){
@@ -255,10 +321,11 @@ export default {
                 if (data.code == 0) {
                     let totalData = JSON.parse(data.data)
                     // console.log(totalData)
-
+                    
                     payload.data = totalData
                     context.commit('SET_BASE_LAYER_INDEX', payload)
                     context.commit('SET_WIND', payload)
+                    context.commit('SET_CURRENT_DATA',payload)
                     context.commit('SET_LAYER_FLAG', true)
                 }
                 else {
@@ -273,6 +340,8 @@ export default {
                         payload.data = null
                         payload.hotData = null
                         context.commit('SET_WIND', payload)
+                       context.commit('SET_CURRENT_DATA',payload)
+
                         context.commit('SET_LAYER_FLAG', true)
                         context.commit('SET_BASE_LAYER_INDEX', payload)
                     }
@@ -301,6 +370,8 @@ export default {
                     payload.data = totalData
                     context.commit('SET_BASE_LAYER_INDEX', payload)
                     context.commit('SET_TAIR', payload)
+                    context.commit('SET_CURRENT_DATA',payload)
+
                     context.commit('SET_LAYER_FLAG', true)
                 }
                 else {
@@ -315,6 +386,8 @@ export default {
                 payload.data = null
                 payload.hotData = null
                 context.commit('SET_TAIR', payload)
+                context.commit('SET_CURRENT_DATA',payload)
+
                 context.commit('SET_LAYER_FLAG', true)
                 context.commit('SET_BASE_LAYER_INDEX', payload)
             }
@@ -338,11 +411,15 @@ export default {
                     payload.data = totalData
                     context.commit('SET_BASE_LAYER_INDEX', payload)
                     context.commit('SET_QAIR', payload)
+                    context.commit('SET_CURRENT_DATA',payload)
+
                     context.commit('SET_LAYER_FLAG', true)
                 }
                 else {
                     payload.data = []
                     context.commit('SET_QAIR', payload)
+                    context.commit('SET_CURRENT_DATA',payload)
+
                     context.commit('SET_LAYER_FLAG', true)
                     context.commit('SET_BASE_LAYER_INDEX', payload)
 
@@ -352,6 +429,8 @@ export default {
                 payload.data = null
                 payload.hotData = null
                 context.commit('SET_QAIR', payload)
+                context.commit('SET_CURRENT_DATA',payload)
+
                 context.commit('SET_LAYER_FLAG', true)
                 context.commit('SET_BASE_LAYER_INDEX', payload)
             }
@@ -376,11 +455,15 @@ export default {
                     payload.data = totalData
                     context.commit('SET_BASE_LAYER_INDEX', payload)
                     context.commit('SET_SO2MASS', payload)
+                    context.commit('SET_CURRENT_DATA',payload)
+
                     context.commit('SET_LAYER_FLAG', true)
                 }
                 else {
                     payload.data = []
                     context.commit('SET_SO2MASS', payload)
+                    context.commit('SET_CURRENT_DATA',payload)
+
                     context.commit('SET_LAYER_FLAG', true)
                     context.commit('SET_BASE_LAYER_INDEX', payload)
 
@@ -391,6 +474,8 @@ export default {
                 payload.data = null
                 // payload.hotData = null
                 context.commit('SET_SO2MASS', payload)
+                context.commit('SET_CURRENT_DATA',payload)
+
                 context.commit('SET_LAYER_FLAG', true)
                 context.commit('SET_BASE_LAYER_INDEX', payload)
             }
@@ -415,11 +500,15 @@ export default {
                     payload.data = totalData
                     context.commit('SET_BASE_LAYER_INDEX', payload)
                     context.commit('SET_CL', payload)
+                    context.commit('SET_CURRENT_DATA',payload)
+
                     context.commit('SET_LAYER_FLAG', true)
                 }
                 else {
                     payload.data = []
                     context.commit('SET_CL', payload)
+                    context.commit('SET_CURRENT_DATA',payload)
+
                     context.commit('SET_LAYER_FLAG', true)
                     context.commit('SET_BASE_LAYER_INDEX', payload)
 
@@ -430,6 +519,8 @@ export default {
                 payload.data = null
                 // payload.hotData = null
                 context.commit('SET_CL', payload)
+                context.commit('SET_CURRENT_DATA',payload)
+
                 context.commit('SET_LAYER_FLAG', true)
                 context.commit('SET_BASE_LAYER_INDEX', payload)
             }
@@ -453,11 +544,15 @@ export default {
                     payload.data = totalData
                     context.commit('SET_BASE_LAYER_INDEX', payload)
                     context.commit('SET_SSFLUXU', payload)
+                    context.commit('SET_CURRENT_DATA',payload)
+
                     context.commit('SET_LAYER_FLAG', true)
                 }
                 else {
                     payload.data = []
                     context.commit('SET_SSFLUXU', payload)
+                    context.commit('SET_CURRENT_DATA',payload)
+
                     context.commit('SET_LAYER_FLAG', true)
                     context.commit('SET_BASE_LAYER_INDEX', payload)
 
@@ -468,6 +563,8 @@ export default {
                 payload.data = null
                 // payload.hotData = null
                 context.commit('SET_SSFLUXU', payload)
+                context.commit('SET_CURRENT_DATA',payload)
+
                 context.commit('SET_LAYER_FLAG', true)
                 context.commit('SET_BASE_LAYER_INDEX', payload)
             }
@@ -491,11 +588,15 @@ export default {
                     payload.data = totalData
                     context.commit('SET_BASE_LAYER_INDEX', payload)
                     context.commit('SET_SSFLUXV', payload)
+                    context.commit('SET_CURRENT_DATA',payload)
+
                     context.commit('SET_LAYER_FLAG', true)
                 }
                 else {
                     payload.data = []
                     context.commit('SET_SSFLUXV', payload)
+                    context.commit('SET_CURRENT_DATA',payload)
+
                     context.commit('SET_LAYER_FLAG', true)
                     context.commit('SET_BASE_LAYER_INDEX', payload)
 
@@ -506,6 +607,8 @@ export default {
                 payload.data = null
                 // payload.hotData = null
                 context.commit('SET_SSFLUXV', payload)
+                context.commit('SET_CURRENT_DATA',payload)
+
                 context.commit('SET_LAYER_FLAG', true)
                 context.commit('SET_BASE_LAYER_INDEX', payload)
             }
@@ -528,6 +631,8 @@ export default {
                     let totalData = JSON.parse(data.data)
                     payload.data = totalData
                     context.commit('SET_BASE_LAYER_INDEX', payload)
+                    context.commit('SET_CURRENT_DATA',payload)
+
                     context.commit('SET_ICORR', payload)
                     context.commit('SET_LAYER_FLAG', true)
                 }
@@ -535,6 +640,8 @@ export default {
                     payload.data = []
                     context.commit('SET_ICORR', payload)
                     context.commit('SET_LAYER_FLAG', true)
+                    context.commit('SET_CURRENT_DATA',payload)
+
                     context.commit('SET_BASE_LAYER_INDEX', payload)
 
                 }
@@ -545,6 +652,8 @@ export default {
                 // payload.hotData = null
                 context.commit('SET_ICORR', payload)
                 context.commit('SET_LAYER_FLAG', true)
+                context.commit('SET_CURRENT_DATA',payload)
+
                 context.commit('SET_BASE_LAYER_INDEX', payload)
             }
         },
