@@ -160,7 +160,7 @@ export default {
       baseMapLayerLegend: [
         ['℃', -45, -30, -15, 0, 15, 30, 45],
         // ['°C',-20,-10,0,10,20,30,40],
-        ['g/kg', 0, 3, 6, 9, 12, 15,18, 20],
+        ['%', 0, 0.2, 0.4, 0.6, 0.8, 1],
         ['μg.m-3', 0, 0.08, 0.8, 8, 80],
         ['m/s', 1, 4, 7, 10, 13,16,19],
         ['mg/m2', 5, 7, 9, 11, 13,15],
@@ -225,7 +225,7 @@ export default {
   methods: {
     //切换 图层
     toggleBaseLayerV1 (item, index) {
-      // console.log(item,index)
+      console.log(item,index)
       this.stopTimeLine()
       if (!this.layerFlag) {
         this.$message({
@@ -324,22 +324,22 @@ export default {
 
         let { timeValue, timeLineMax } = this
         if (timeValue >= timeLineMax) {
-        //   this.stopTimeLine()
+          this.stopTimeLine()
         //   return false
-            this.timeValue = 0
+            // this.timeValue = 0
         } else {
           this.timeValue = parseInt(timeValue) + 14
         //   console.log(timeValue)
           this.inputTimeLine(this.timeValue, this.baseLayerIndex)
           // console.log(this.timeValue)
         }
-      }, 1500)
+      }, 3500)
     },
     inputTimeLine (v, i) {
      
       let index = i != null ? i : this.baseLayerIndex
       let item = this.baseLayer[index]
-      this.$store.dispatch('moduleMap/' + item.layerType, { flag: false, time: v/14, index: index })
+      this.$store.dispatch('moduleMap/' + item.layerType, { flag: false, time: Math.floor(v/14), index: index })
     },
     async querySearch (queryString, cb) {
       try {
