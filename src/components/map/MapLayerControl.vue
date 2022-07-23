@@ -333,7 +333,7 @@ export default {
           this.inputTimeLine(this.timeValue, this.baseLayerIndex)
           // console.log(this.timeValue)
         }
-      }, 3500)
+      }, 5000)
     },
     inputTimeLine (v, i) {
      

@@ -8,8 +8,8 @@
       class="map"
       :zoom="zoom"
       :center="center"
-      :minZoom="minZoom"
-      :maxZoom="maxZoom"
+      :minZoom=3
+      :maxZoom=15
       :crs="crs"
       :option="{}"
       :style="{ height: mapHeight }"

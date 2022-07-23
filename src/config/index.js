@@ -2,7 +2,7 @@ export default {
     map:{
         zoom:5,
         minZoom:4,
-        maxZoom:20,
+        maxZoom:10,
         center:[12.583623,116.286986],
         heatmapConfg:{ // 热力图配置
             'radius': 0.4,
