@@ -43,7 +43,7 @@
     <div
       class="map-time-legend"
       :class="{ 'map-time-legend-phone': isMobile }"
-      :style="{ width: TimeLineWidth-100 + 'px' }"
+      :style="{ width: TimeLineWidth - 100 + 'px' }"
       v-show="showTimeLine"
     >
       <div class="time-line" :class="{ 'time-line-phone': isMobile }">
@@ -113,7 +113,6 @@
         @select="handleSelect"
       ></el-autocomplete>
     </div>
-  
   </div>
 </template>
 
@@ -162,11 +161,11 @@ export default {
         // ['°C',-20,-10,0,10,20,30,40],
         ['%', 0, 0.2, 0.4, 0.6, 0.8, 1],
         ['μg.m-3', 0, 0.08, 0.8, 8, 80],
-        ['m/s', 1, 4, 7, 10, 13,16,19],
-        ['mg/m2', 5, 7, 9, 11, 13,15],
-        ['g/m.s',-1.5,-1,-0.5,0,0.5,1,1.5,2],
-        ['g/m.s',-0.2,-0.15,-0.1,-0.05,0,0.05,0.1],
-        ['level', 1,2,3,4,5]
+        ['m/s', 1, 4, 7, 10, 13, 16, 19],
+        ['mg/m2', 5, 7, 9, 11, 13, 15],
+        ['g/m.s', -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2],
+        ['g/m.s', -0.2, -0.15, -0.1, -0.05, 0, 0.05, 0.1],
+        ['level', 1, 2,2.5, 3,3.5, 4, 5]
 
         // ['m/s', 0, 0.1, 0.5, 1, 1.5, 2, 2.5, 3, 3.5],
         // ['hPa', 995, 1001, 1007, 1013, 1019, 1025],
@@ -225,7 +224,7 @@ export default {
   methods: {
     //切换 图层
     toggleBaseLayerV1 (item, index) {
-      console.log(item,index)
+      console.log(item, index)
       this.stopTimeLine()
       if (!this.layerFlag) {
         this.$message({
@@ -240,14 +239,14 @@ export default {
             index: index,
           });
         } else {
-        //   let activeItem = index != null ? this.baseLayer[index] : null;
-        //   if (activeItem) {
-            
-        //     this.$store.dispatch("moduleMap/" + activeItem.layerType, {
-        //       flag: false,
-        //       index: index,
-        //     });
-        //   }
+          //   let activeItem = index != null ? this.baseLayer[index] : null;
+          //   if (activeItem) {
+
+          //     this.$store.dispatch("moduleMap/" + activeItem.layerType, {
+          //       flag: false,
+          //       index: index,
+          //     });
+          //   }
           this.changeTimeLine(this.timeValue, index)
 
         }
@@ -317,7 +316,7 @@ export default {
       //   let tt = this.baseLayerIndex == 0 || this.baseLayerIndex == 3 ? 5000 : 1500
       let tt = 1500
       this.timeFlag = true
-      
+
       //   console.log(tt)
       //   console.log(this.timeValue)
       this._t = setInterval(() => {
@@ -325,21 +324,21 @@ export default {
         let { timeValue, timeLineMax } = this
         if (timeValue >= timeLineMax) {
           this.stopTimeLine()
-        //   return false
-            // this.timeValue = 0
+          //   return false
+          // this.timeValue = 0
         } else {
           this.timeValue = parseInt(timeValue) + 14
-        //   console.log(timeValue)
+          //   console.log(timeValue)
           this.inputTimeLine(this.timeValue, this.baseLayerIndex)
           // console.log(this.timeValue)
         }
       }, 5000)
     },
     inputTimeLine (v, i) {
-     
+
       let index = i != null ? i : this.baseLayerIndex
       let item = this.baseLayer[index]
-      this.$store.dispatch('moduleMap/' + item.layerType, { flag: false, time: Math.floor(v/14), index: index })
+      this.$store.dispatch('moduleMap/' + item.layerType, { flag: false, time: Math.floor(v / 14), index: index })
     },
     async querySearch (queryString, cb) {
       try {
@@ -369,7 +368,7 @@ export default {
       // console.log(window.map)
       window.map.setView([latlon[1], latlon[0]], 14)
     },
-  
+
 
   },
   created () {
@@ -598,9 +597,9 @@ export default {
       }
     }
     .map-legend {
-        position: absolute;
-        right: -7%;
-        bottom: 5px;
+      position: absolute;
+      right: -7%;
+      bottom: 5px;
       width: 30px;
       height: 300px;
       display: flex;
@@ -618,9 +617,9 @@ export default {
         // box-shadow: 0px 2px 4px #2f332a;
         padding: 5px 5px;
         span {
-            display: block;
-            word-wrap: break-word;
-            width: 32px;
+          display: block;
+          word-wrap: break-word;
+          width: 32px;
           text-align: center;
           font-size: 12px;
           font-weight: 400;
@@ -634,6 +633,10 @@ export default {
       .layer0 {
         background: linear-gradient(
           to bottom,
+          rgba(90, 86, 143, 1),
+          rgba(90, 86, 143, 1),
+          rgba(90, 86, 143, 1),
+          rgba(90, 86, 143, 1),
           rgba(90, 86, 143, 1),
           rgba(72, 104, 181, 1),
           rgba(69, 151, 168, 1),
@@ -652,6 +655,10 @@ export default {
         background: linear-gradient(
           to bottom,
           rgba(90, 86, 143, 1),
+          rgba(90, 86, 143, 1),
+          rgba(90, 86, 143, 1),
+          rgba(90, 86, 143, 1),
+          rgba(90, 86, 143, 1),
           rgba(72, 104, 181, 1),
           rgba(69, 151, 168, 1),
           rgba(81, 180, 98, 1),
@@ -668,6 +675,10 @@ export default {
       .layer2 {
         background: linear-gradient(
           to bottom,
+          rgba(90, 86, 143, 1),
+          rgba(90, 86, 143, 1),
+          rgba(90, 86, 143, 1),
+          rgba(90, 86, 143, 1),
           rgba(90, 86, 143, 1),
           rgba(72, 104, 181, 1),
           rgba(69, 151, 168, 1),
@@ -686,6 +697,10 @@ export default {
         background: linear-gradient(
           to bottom,
           rgba(90, 86, 143, 1),
+          rgba(90, 86, 143, 1),
+          rgba(90, 86, 143, 1),
+          rgba(90, 86, 143, 1),
+          rgba(90, 86, 143, 1),
           rgba(72, 104, 181, 1),
           rgba(69, 151, 168, 1),
           rgba(81, 180, 98, 1),
@@ -703,6 +718,10 @@ export default {
         background: linear-gradient(
           to bottom,
           rgba(90, 86, 143, 1),
+          rgba(90, 86, 143, 1),
+          rgba(90, 86, 143, 1),
+          rgba(90, 86, 143, 1),
+          rgba(90, 86, 143, 1),
           rgba(72, 104, 181, 1),
           rgba(69, 151, 168, 1),
           rgba(81, 180, 98, 1),
@@ -719,6 +738,10 @@ export default {
       .layer5 {
         background: linear-gradient(
           to bottom,
+          rgba(90, 86, 143, 1),
+          rgba(90, 86, 143, 1),
+          rgba(90, 86, 143, 1),
+          rgba(90, 86, 143, 1),
           rgba(90, 86, 143, 1),
           rgba(72, 104, 181, 1),
           rgba(69, 151, 168, 1),
@@ -741,18 +764,16 @@ export default {
       .layer11 {
         background: linear-gradient(
           to bottom,
-          rgba(90, 86, 143, 1),
-          rgba(72, 104, 181, 1),
-          rgba(69, 151, 168, 1),
-          rgba(81, 180, 98, 1),
-          rgba(106, 192, 82, 1),
-          rgba(177, 209, 67, 1),
-          rgba(215, 206, 60, 1),
-          rgba(214, 172, 64, 1),
-          rgba(213, 137, 72, 1),
-          rgba(205, 94, 93, 1),
-          rgba(144, 28, 79, 1),
-          rgba(43, 0, 1, 1)
+            rgba(217, 77, 77,1),
+            rgba(135, 171, 102,1),
+            rgba(251, 180, 72,1),
+            rgba(103, 205, 204,1),
+            rgba(171, 58, 107,1),
+            rgba(81, 48, 135,1),
+            rgba(4, 101, 137,1),
+            rgba(15, 105, 138,1),
+           
+
         );
       }
     }
@@ -842,5 +863,4 @@ export default {
   left: 17px;
   zoom: 0.7;
 }
-
 </style>

@@ -116,6 +116,7 @@ export default {
           if (this.baseLayerIndex == null) {
             return;
           }
+          console.log('sx')
           this.$store.dispatch("moduleMap/setShowData", {
             lat: e.latlng.lat,
             lng: e.latlng.lng,
@@ -269,7 +270,7 @@ export default {
           config = { ...config, minValue: -0.5, maxValue: 0.5 }
           break;
         case 'setIcorr':
-          config = { ...config, minValue: 1.8, maxValue: 4.8 }
+          config = { ...config, minValue: 1.4, maxValue: 5 }
           break;
         default:
           config = { ...config, minValue: -30.0, maxValue: 40 };
